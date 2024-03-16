@@ -6,6 +6,7 @@
 uint32_t curr_instr;  // current instruction
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
+    printf("fetch");
     }
 
 // INSTRUCCIONES A IMPLEMENTAR:
@@ -41,18 +42,37 @@ uint32_t rd;
 uint32_t rn;
 uint32_t rm;
 
+void execute_ADDS() {
+    printf("executeAdds");
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    int64_t result = op1 + op2;
+    if (result < 0){
+        NEXT_STATE.FLAG_N = 1;
+    }else{
+        NEXT_STATE.FLAG_N = 0;
+    }
+    if (result == 0){
+        NEXT_STATE.FLAG_Z = 1;
+    }else{
+        NEXT_STATE.FLAG_Z = 0;
+    }
+
+    NEXT_STATE.REGS[rd] = result; 
+}
 // ------------------------- DECODE -------------------------
 void decode()
 {
     fetch();
-
+    printf("decode");
     // 1. identify opcode format:
     
     // case B: B or BR
     uint32_t opcode = curr_instr >> 26;
     
     opcode = curr_instr >> 21;
-    if (curr_instr==0b10101011001) { // quizas es 0b10101011000 segun tp
+    if (curr_instr==0b10101011000) { // quizas es 0b10101011000 segun tp
         // ADDS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
@@ -61,6 +81,7 @@ void decode()
         // shamt = shamt >> 10;
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
+        printf("if");
         execute_ADDS();
     }
 
@@ -100,24 +121,7 @@ void decode()
     // case IW:
 }
 
-void execute_ADDS() {
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
-    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    int64_t result = op1 + op2;
-    if (result < 0){
-        NEXT_STATE.FLAG_N = 1;
-    }else{
-        NEXT_STATE.FLAG_N = 0;
-    }
-    if (result == 0){
-        NEXT_STATE.FLAG_Z = 1;
-    }else{
-        NEXT_STATE.FLAG_Z = 0;
-    }
 
-    NEXT_STATE.REGS[rd] = result; 
-}
 
 void process_instruction()
 {
