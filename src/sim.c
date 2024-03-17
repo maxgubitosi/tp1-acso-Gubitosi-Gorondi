@@ -3,10 +3,12 @@
 #include <string.h>
 #include "shell.h"
 
+#define DEBUG 1
+
 uint32_t curr_instr;  // current instruction
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
-    printf("fetch");
+    printf("fetch\n");
     }
 
 // INSTRUCCIONES A IMPLEMENTAR:
@@ -42,30 +44,28 @@ uint32_t rd;
 uint32_t rn;
 uint32_t rm;
 
-void execute_ADDS() {
-    printf("executeAdds");
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
-    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    int64_t result = op1 + op2;
-    if (result < 0){
-        NEXT_STATE.FLAG_N = 1;
-    }else{
-        NEXT_STATE.FLAG_N = 0;
-    }
-    if (result == 0){
-        NEXT_STATE.FLAG_Z = 1;
-    }else{
-        NEXT_STATE.FLAG_Z = 0;
-    }
+/* IDEA: hacer un struct con los instructions:
+    typedef struct instruction {
+        char *name;
+        uint32_t opcode;
+        char *type: // R, I, D, B, CB, IW;
+        uint32_t rd;
+        uint32_t rn;
+        uint32_t rm;
+    } instruction_t;
 
-    NEXT_STATE.REGS[rd] = result; 
-}
+*/
+
 // ------------------------- DECODE -------------------------
 void decode()
 {
     fetch();
-    printf("decode");
+
+    if (DEBUG != 0) {
+        printf("decode\n");
+        printf("curr_instr: %d\n", curr_instr); // imprimo instuccion actual para debug
+    }
+    
     // 1. identify opcode format:
     
     // case B: B or BR
@@ -81,7 +81,7 @@ void decode()
         // shamt = shamt >> 10;
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
-        printf("if");
+        if (DEBUG !=0) {printf("if\n");}
         execute_ADDS();
     }
 
@@ -122,6 +122,26 @@ void decode()
 }
 
 
+// ------------------------- EXECUTE -------------------------
+void execute_ADDS() {
+    if (DEBUG != 0) {printf("execute_ADDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    int64_t result = op1 + op2;
+    if (result < 0){
+        NEXT_STATE.FLAG_N = 1;
+    }else{
+        NEXT_STATE.FLAG_N = 0;
+    }
+    if (result == 0){
+        NEXT_STATE.FLAG_Z = 1;
+    }else{
+        NEXT_STATE.FLAG_Z = 0;
+    }
+
+    NEXT_STATE.REGS[rd] = result; 
+}
 
 void process_instruction()
 {
