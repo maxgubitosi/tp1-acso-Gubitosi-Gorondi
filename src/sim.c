@@ -93,7 +93,8 @@ void decode()
     uint32_t opcode = curr_instr >> 26;
     
     opcode = curr_instr >> 21;
-    if (curr_instr==0b10101011000) { // quizas es 0b10101011000 segun tp
+    //  ADDS EXTENDED
+    if (curr_instr == 0b10101011000) { // quizas es 0b10101011000 segun tp
         // ADDS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
@@ -103,6 +104,21 @@ void decode()
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
         if (DEBUG == 1) {printf("if\n");}
+        execute_ADDS();
+    }
+
+    opcode = curr_instr >> 1;
+    // ADDS IMMEDIATE
+    if (curr_instr == 0b1011000100 || curr_instr == 0b1011000101) { 
+        if (DEBUG == 1) {printf("if_ADDS_IMMEDIATE\n");}
+        // ADDS (extended register)
+        rd = curr_instr & 0x0000001f; 
+        rn = curr_instr & 0x000003e0;
+        rn = rn >> 5;
+        // uint32_t shamt = curr_instr & 0x0000fc00;
+        // shamt = shamt >> 10;
+        rm = curr_instr & 0x001f0000;
+        rm = rm >> 16;
         execute_ADDS();
     }
 
