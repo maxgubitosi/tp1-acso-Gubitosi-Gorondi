@@ -113,6 +113,7 @@ void execute() {
         }
 
     }
+    NEXT_STATE.PC += 4;
 }
 // ------------------------- DECODE -------------------------
 void decode()
