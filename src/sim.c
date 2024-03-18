@@ -5,12 +5,16 @@
 
 #define DEBUG 1        // 1 para debuggear
 
+#define ADD 1
+#define ADDI 2
+
+
 uint32_t curr_instr;  // current instruction
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
     printf("fetch\n");
     printf("comentario\n");
-    }
+}
 
 // INSTRUCCIONES A IMPLEMENTAR:
 /*
@@ -41,9 +45,14 @@ void fetch() {
     19. MOVZ
 */
 
+
+
+int instr_name=0;
 uint32_t rd;
 uint32_t rn;
 uint32_t rm;
+uint32_t imm;
+uint64_t result;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -58,44 +67,51 @@ uint32_t rm;
 */
 
 // ------------------------- EXECUTE -------------------------
+void execute() {
+    if (DEBUG == 1) {printf("execute\n");}
+        switch (instr_name) {
+            case ADDI:
+                execute_ADDS_imm();
+                break;
+            case ADD:
+                execute_ADDS_ext();
+                break;
+            default:
+                break;
+            
+        if (result < 0){
+            NEXT_STATE.FLAG_N = 1;
+        }else{
+            NEXT_STATE.FLAG_N = 0;
+        }
+        if (result == 0){
+            NEXT_STATE.FLAG_Z = 1;
+        }else{
+            NEXT_STATE.FLAG_Z = 0;
+        }
+
+    }
+}
+
 void execute_ADDS_ext() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
     int64_t op1 = CURRENT_STATE.REGS[rn];
     int64_t op2 = CURRENT_STATE.REGS[rm];
     // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    int64_t result = op1 + op2;
-    if (result < 0){
-        NEXT_STATE.FLAG_N = 1;
-    }else{
-        NEXT_STATE.FLAG_N = 0;
-    }
-    if (result == 0){
-        NEXT_STATE.FLAG_Z = 1;
-    }else{
-        NEXT_STATE.FLAG_Z = 0;
-    }
+    result = op1 + op2;
 
     NEXT_STATE.REGS[rd] = result; 
 }
 
-void execute_ADDS_imm(uint32_t imm12) {
+void execute_ADDS_imm() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
     int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = imm12;
+    int64_t op2 = imm;
     // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    int64_t result = op1 + op2;
-    if (result < 0){
-        NEXT_STATE.FLAG_N = 1;
-    }else{
-        NEXT_STATE.FLAG_N = 0;
-    }
-    if (result == 0){
-        NEXT_STATE.FLAG_Z = 1;
-    }else{
-        NEXT_STATE.FLAG_Z = 0;
-    }
+    result = op1 + op2;
 
     NEXT_STATE.REGS[rd] = result; 
+
 }
 // ------------------------- DECODE -------------------------
 void decode()
@@ -125,7 +141,7 @@ void decode()
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
         if (DEBUG == 1) {printf("if\n");}
-        execute_ADDS_ext();
+        instr_name = ADD;
     }
 
     opcode = opcode >> 1;
@@ -140,15 +156,14 @@ void decode()
         rn = curr_instr & 0x000001f0;
         rn = rn >> 5;
         // mask bits 10-21
-        uint32_t imm12 = curr_instr & 0x003ffc00;
+        imm = curr_instr & 0x003ffc00; //imm12
         uint32_t shift = opcode & 0b0000000001;
         if (shift == 0b0000000000) {
-            imm12 = imm12 >> 10;
+            imm = imm >> 10;
         } else if (shift == 0b0000000001) {
             // pass
         } 
-
-        execute_ADDS_imm(imm12);
+        instr_name = ADDI;
     }
 
     // // B (pag 550) 
@@ -200,5 +215,6 @@ void process_instruction()
      * 
      * */
     decode();
+    execute();
 
 }
