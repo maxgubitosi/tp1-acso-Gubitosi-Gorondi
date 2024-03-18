@@ -3,7 +3,7 @@
 #include <string.h>
 #include "shell.h"
 
-#define DEBUG 1       // 1 para debuggear
+#define DEBUG 1        // 1 para debuggear
 
 uint32_t curr_instr;  // current instruction
 void fetch() {
@@ -56,6 +56,26 @@ uint32_t rm;
 
 */
 
+// ------------------------- EXECUTE -------------------------
+void execute_ADDS() {
+    if (DEBUG == 1) {printf("execute_ADDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    int64_t result = op1 + op2;
+    if (result < 0){
+        NEXT_STATE.FLAG_N = 1;
+    }else{
+        NEXT_STATE.FLAG_N = 0;
+    }
+    if (result == 0){
+        NEXT_STATE.FLAG_Z = 1;
+    }else{
+        NEXT_STATE.FLAG_Z = 0;
+    }
+
+    NEXT_STATE.REGS[rd] = result; 
+}
 // ------------------------- DECODE -------------------------
 void decode()
 {
@@ -122,26 +142,6 @@ void decode()
 }
 
 
-// ------------------------- EXECUTE -------------------------
-void execute_ADDS() {
-    if (DEBUG == 1) {printf("execute_ADDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
-    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    int64_t result = op1 + op2;
-    if (result < 0){
-        NEXT_STATE.FLAG_N = 1;
-    }else{
-        NEXT_STATE.FLAG_N = 0;
-    }
-    if (result == 0){
-        NEXT_STATE.FLAG_Z = 1;
-    }else{
-        NEXT_STATE.FLAG_Z = 0;
-    }
-
-    NEXT_STATE.REGS[rd] = result; 
-}
 
 void process_instruction()
 {
