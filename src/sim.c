@@ -7,6 +7,7 @@
 
 #define ADD 1
 #define ADDI 2
+#define HLT 3
 
 
 uint32_t curr_instr;  // current instruction
@@ -89,6 +90,11 @@ void execute_ADDS_imm() {
 
 }
 
+void execute_HLT() {
+    if (DEBUG == 1) {printf("execute_HLT\n");}
+    RUN_BIT = FALSE;
+}
+
 void execute() {
     if (DEBUG == 1) {printf("execute\n");}
         switch (instr_name) {
@@ -97,6 +103,9 @@ void execute() {
                 break;
             case ADD:
                 execute_ADDS_ext();
+                break;
+            case HLT:
+                execute_HLT();
                 break;
             default:
                 break;
@@ -131,6 +140,10 @@ void decode()
     uint32_t opcode = curr_instr >> 26;
     
     opcode = curr_instr >> 21;
+    // HLT
+    if (opcode == 0b11010100010) {
+        instr_name = HLT;
+    }
     //  ADDS EXTENDED
     if (DEBUG == 1) {printf("opcode: %d\n", opcode);}
     if (opcode == 0b10101011000) { // quizas es 0b10101011000 segun tp
