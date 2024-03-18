@@ -9,6 +9,7 @@ uint32_t curr_instr;  // current instruction
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
     printf("fetch\n");
+    printf("comentario\n");
     }
 
 // INSTRUCCIONES A IMPLEMENTAR:
