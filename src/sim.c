@@ -3,7 +3,7 @@
 #include <string.h>
 #include "shell.h"
 
-#define DEBUG 1
+#define DEBUG 1       // 1 para debuggear
 
 uint32_t curr_instr;  // current instruction
 void fetch() {
@@ -61,7 +61,7 @@ void decode()
 {
     fetch();
 
-    if (DEBUG != 0) {
+    if (DEBUG == 1) {
         printf("decode\n");
         printf("curr_instr: %d\n", curr_instr); // imprimo instuccion actual para debug
     }
@@ -81,7 +81,7 @@ void decode()
         // shamt = shamt >> 10;
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
-        if (DEBUG !=0) {printf("if\n");}
+        if (DEBUG == 1) {printf("if\n");}
         execute_ADDS();
     }
 
@@ -124,7 +124,7 @@ void decode()
 
 // ------------------------- EXECUTE -------------------------
 void execute_ADDS() {
-    if (DEBUG != 0) {printf("execute_ADDS\n");}
+    if (DEBUG == 1) {printf("execute_ADDS\n");}
     int64_t op1 = CURRENT_STATE.REGS[rn];
     int64_t op2 = CURRENT_STATE.REGS[rm];
     // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
