@@ -58,10 +58,30 @@ uint32_t rm;
 */
 
 // ------------------------- EXECUTE -------------------------
-void execute_ADDS() {
+void execute_ADDS_ext() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
     int64_t op1 = CURRENT_STATE.REGS[rn];
     int64_t op2 = CURRENT_STATE.REGS[rm];
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    int64_t result = op1 + op2;
+    if (result < 0){
+        NEXT_STATE.FLAG_N = 1;
+    }else{
+        NEXT_STATE.FLAG_N = 0;
+    }
+    if (result == 0){
+        NEXT_STATE.FLAG_Z = 1;
+    }else{
+        NEXT_STATE.FLAG_Z = 0;
+    }
+
+    NEXT_STATE.REGS[rd] = result; 
+}
+
+void execute_ADDS_imm(uint32_t imm12) {
+    if (DEBUG == 1) {printf("execute_ADDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = imm12;
     // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
     int64_t result = op1 + op2;
     if (result < 0){
@@ -105,7 +125,7 @@ void decode()
         rm = curr_instr & 0x001f0000;
         rm = rm >> 16;
         if (DEBUG == 1) {printf("if\n");}
-        execute_ADDS();
+        execute_ADDS_ext();
     }
 
     opcode = opcode >> 1;
@@ -114,14 +134,21 @@ void decode()
     if (opcode == 0b1011000100 || opcode == 0b1011000101) { 
         if (DEBUG == 1) {printf("if_ADDS_IMMEDIATE\n");}
         // ADDS (extended register)
-        rd = curr_instr & 0x0000001f; 
-        rn = curr_instr & 0x000003e0;
+        // mask last 4 bits
+        rd = curr_instr & 0x0000000f;
+        // mask bits 5-9 bits
+        rn = curr_instr & 0x000001f0;
         rn = rn >> 5;
-        // uint32_t shamt = curr_instr & 0x0000fc00;
-        // shamt = shamt >> 10;
-        rm = curr_instr & 0x001f0000;
-        rm = rm >> 16;
-        execute_ADDS();
+        // mask bits 10-21
+        uint32_t imm12 = curr_instr & 0x003ffc00;
+        uint32_t shift = opcode & 0b0000000001;
+        if (shift == 0b0000000000) {
+            imm12 = imm12 >> 10;
+        } else if (shift == 0b0000000001) {
+            // pass
+        } 
+
+        execute_ADDS_imm(imm12);
     }
 
     // // B (pag 550) 
