@@ -67,6 +67,28 @@ uint64_t result;
 */
 
 // ------------------------- EXECUTE -------------------------
+
+void execute_ADDS_ext() {
+    if (DEBUG == 1) {printf("execute_ADDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    result = op1 + op2;
+
+    NEXT_STATE.REGS[rd] = result; 
+}
+
+void execute_ADDS_imm() {
+    if (DEBUG == 1) {printf("execute_ADDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = imm;
+    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
+    result = op1 + op2;
+
+    NEXT_STATE.REGS[rd] = result; 
+
+}
+
 void execute() {
     if (DEBUG == 1) {printf("execute\n");}
         switch (instr_name) {
@@ -91,27 +113,6 @@ void execute() {
         }
 
     }
-}
-
-void execute_ADDS_ext() {
-    if (DEBUG == 1) {printf("execute_ADDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
-    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    result = op1 + op2;
-
-    NEXT_STATE.REGS[rd] = result; 
-}
-
-void execute_ADDS_imm() {
-    if (DEBUG == 1) {printf("execute_ADDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = imm;
-    // exec_ALU(op1, op2, &N, &Z, &V, &C, &result, instr_name);
-    result = op1 + op2;
-
-    NEXT_STATE.REGS[rd] = result; 
-
 }
 // ------------------------- DECODE -------------------------
 void decode()
