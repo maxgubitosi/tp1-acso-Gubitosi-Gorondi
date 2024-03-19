@@ -148,6 +148,7 @@ void execute_ANDS() {
     if (DEBUG == 1) {printf("execute_ANDS\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t aux = op2;
 
     switch (shift) {
     case 0b00:        // LSL
@@ -165,7 +166,6 @@ void execute_ANDS() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -181,6 +181,7 @@ void execute_EOR() {
     if (DEBUG == 1) {printf("execute_EOR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t aux = op2;
 
     switch (shift) {
     case 0b00:        // LSL
@@ -198,7 +199,6 @@ void execute_EOR() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -215,6 +215,7 @@ void execute_ORR() {
     if (DEBUG == 1) {printf("execute_ORR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t aux = op2;
 
     switch (shift) {
     case 0b00:        // LSL
@@ -232,7 +233,6 @@ void execute_ORR() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
