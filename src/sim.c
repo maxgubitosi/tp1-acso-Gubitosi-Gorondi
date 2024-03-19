@@ -73,7 +73,7 @@ uint32_t rn;
 uint32_t rm;
 uint32_t imm;
 uint32_t shift;
-uint64_t result;
+int64_t result;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
