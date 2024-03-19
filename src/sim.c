@@ -74,6 +74,7 @@ uint32_t rm;
 uint32_t imm;
 uint32_t shift;
 uint64_t result;
+uint64_t immr;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -137,7 +138,7 @@ void execute_CMP() {
 }
 
 void execute_CMP_imm() {
-    if (DEBUG == 1) {printf("execute_SUBSI\n");}
+    if (DEBUG == 1) {printf("execute_CMPI\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = imm;
     result = op1 - op2;
@@ -248,6 +249,15 @@ void execute_ORR() {
 
 }
 
+void execute_LSL() {                                    // QUE HAGO CON EL immr? HAY QUE ROTAR? !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (DEBUG == 1) {printf("execute_LSL\n");}
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t aux = op1;
+    result = op1 << (imm % 64);            // usa mod 
+    NEXT_STATE.REGS[rd] = result;
+}
+
+
 
 // GENERAL EXECUTE FUNCTIONS
 void set_flags() {
@@ -301,7 +311,7 @@ void execute() {
             execute_ORR();
             break;
         case LSL:
-            // execute_LSL();
+            execute_LSL();
             break;
         case LSR:
             // execute_LSR();
@@ -386,7 +396,7 @@ void decode()
         if (DEBUG == 1) {printf("CMP \n opcode: %d\n", opcode);}
         // CMP
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
-        rn = curr_instr & 0x000001f0;   // mask bits 5-9
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         rm = curr_instr & 0x001f0000;   // mask bits 16-20
         rm = rm >> 16;                  // shift 16 bits 
@@ -496,6 +506,23 @@ void decode()
             imm = imm << 2;
         } 
         instr_name = CMPI;
+    }
+
+    // LSL (immediate)
+    if (opcode == 0b1101001101) {
+        if (DEBUG == 1) {printf("LSL \n opcode: %d\n", opcode);}
+        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
+        if (imm == 0b111111) {
+            if (DEBUG == 1) {printf("LSL con imm == 0b111111\n");}
+            return;
+        }
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = imm >> 10;
+        immr = 0x003f0000;              // mask bits 16-21
+        immr = immr >> 16;
+        instr_name = LSL;
     }
 
     // // case CB:  
