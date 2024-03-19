@@ -9,7 +9,7 @@
 #define ADDSI 2
 #define HLT 3
 #define SUBS 4
-# define SUBSI 5
+#define SUBSI 5
 
 
 // probar enummerate
@@ -126,11 +126,11 @@ void set_flags() {
 void execute() {
     if (DEBUG == 1) {printf("execute\n");}
         switch (instr_name) {
-            case ADDSI:
-                execute_ADDS_imm();
-                break;
             case ADDS:
                 execute_ADDS_ext();
+                break;
+            case ADDSI:
+                execute_ADDS_imm();
                 break;
             case HLT:
                 execute_HLT();
@@ -172,8 +172,8 @@ void decode()
         instr_name = HLT;
     }
     //  ADDS EXTENDED
-    if (DEBUG == 1) {printf("opcode: %d\n", opcode);}
     if (opcode == 0b10101011000) { // quizas es 0b10101011000 segun tp
+        if (DEBUG == 1) {printf("ADDS EXTENDED \n opcode: %d\n", opcode);}
         // ADDS (extended register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -185,8 +185,8 @@ void decode()
     }
 
     // SUBS EXTENDED
-    if (DEBUG == 1) {printf("opcode: %d\n", opcode);}
-    if (opcode == 0b11101011001) { 
+    if (opcode == 0b11101011000) { // era 0b11101011001
+        if (DEBUG == 1) {printf("SUBS EXTENDED \n opcode: %d\n", opcode);}
         // ADDS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
@@ -199,9 +199,9 @@ void decode()
 
     opcode = opcode >> 1; // shiftea total 22
     // ADDS IMMEDIATE
-    if (DEBUG == 1) {printf("opcode: %d\n", opcode);}
     if (opcode == 0b1011000100 || opcode == 0b1011000101) { 
-        if (DEBUG == 1) {printf("if_ADDS_IMMEDIATE\n");}
+        if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %d\n", opcode);}
+
         // ADDS (extended register)
         // mask last 4 bits
         rd = curr_instr & 0x0000000f;
@@ -220,9 +220,8 @@ void decode()
     }
 
     // SUBS IMMEDIATE
-    if (DEBUG == 1) {printf("opcode: %d\n", opcode);}
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
-        if (DEBUG == 1) {printf("if_SUBS_IMMEDIATE\n");}
+        if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
         rd = curr_instr & 0x0000000f;  // mask last 4 bits
         rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
         rn = rn >> 5; 
