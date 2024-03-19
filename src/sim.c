@@ -111,6 +111,8 @@ void execute_HLT() {
 }
 
 void set_flags() {
+    if (DEBUG == 1) {printf("entra en función set_flags\n");}
+
     if (result < 0){
         NEXT_STATE.FLAG_N = 1;
     }else{
@@ -124,28 +126,28 @@ void set_flags() {
 }
 
 void execute() {
-    if (DEBUG == 1) {printf("execute\n");}
-        switch (instr_name) {
-            case ADDS:
-                execute_ADDS_ext();
-                break;
-            case ADDSI:
-                execute_ADDS_imm();
-                break;
-            case HLT:
-                execute_HLT();
-                break;
-            case SUBS:
-                execute_SUBS_ext();
-                break;
-            case SUBSI:
-                execute_SUBS_imm();
-                break;
+    if (DEBUG == 1) {printf("execute_funcion\n");}
+    switch (instr_name) {
+        case ADDS:
+            execute_ADDS_ext();
+            break;
+        case ADDSI:
+            execute_ADDS_imm();
+            break;
+        case HLT:
+            execute_HLT();
+            break;
+        case SUBS:
+            execute_SUBS_ext();
+            break;
+        case SUBSI:
+            execute_SUBS_imm();
+            break;
 
-            default:
-                break;
-            
-        set_flags();
+        default:
+            break;
+        
+    set_flags();
 
     }
     NEXT_STATE.PC += 4;
@@ -154,8 +156,6 @@ void execute() {
 // ------------------------- DECODE -------------------------
 void decode()
 {
-    fetch();
-
     if (DEBUG == 1) {
         printf("decode\n");
         printf("curr_instr: %d\n", curr_instr); // imprimo instuccion actual para debug
@@ -286,6 +286,7 @@ void process_instruction()
      *             y otra para execute()
      * 
      * */
+    fetch();
     decode();
     execute();
 
