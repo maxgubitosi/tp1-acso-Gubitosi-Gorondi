@@ -182,18 +182,18 @@ void execute_EOR() {
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
     uint64_t aux = op2;
-
+    printf("shift: %d, imm: %d\n", shift, imm);
     switch (shift) {
-        printf("shift: %d\n", shift);
-
     case 0b00:        // LSL
         printf("entra en LSL\n");
         op2 = op2 << imm;
         break;
     case 0b01:       // LSR
+        printf("entra en LSR\n");
         op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
+        printf("entra en ASR\n");
         if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             op2 = op2 >> imm;
             op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
@@ -201,7 +201,8 @@ void execute_EOR() {
             op2 = op2 >> imm;
         }
         break;
-    case 0b11:
+    case 0b11:   // ROR
+    printf("entra en ROR\n");
         op2 = op2 >> imm;
         op2 = op2 | (aux << (64-imm));
         break;
