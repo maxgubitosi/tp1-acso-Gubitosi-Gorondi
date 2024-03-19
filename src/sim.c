@@ -178,6 +178,7 @@ void execute_ANDS() {
 }
 
 void execute_EOR() {
+    printf("curr_instr: %d\n", curr_instr);
     if (DEBUG == 1) {printf("execute_EOR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
