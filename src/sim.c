@@ -73,7 +73,7 @@ uint32_t rn;
 uint32_t rm;
 uint32_t imm;
 uint32_t shift;
-int64_t result;
+uint64_t result;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -94,31 +94,31 @@ int64_t result;
 // EXECUTE SPECIFIC INSTRUCTIONS
 void execute_ADDS_ext() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
     result = op1 + op2;
     NEXT_STATE.REGS[rd] = result; 
 }
 
 void execute_SUBS_ext() {
     if (DEBUG == 1) {printf("execute_SUBS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
     result = op1 - op2;
     NEXT_STATE.REGS[rd] = result; 
 }
 void execute_ADDS_imm() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = imm;
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = imm;
     result = op1 + op2;
     NEXT_STATE.REGS[rd] = result; 
 }
 
 void execute_SUBS_imm() {
     if (DEBUG == 1) {printf("execute_SUBSI\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = imm;
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = imm;
     result = op1 - op2;
     NEXT_STATE.REGS[rd] = result;
 }
@@ -130,24 +130,24 @@ void execute_HLT() {
 
 void execute_CMP() {
     if (DEBUG == 1) {printf("execute_CMP\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
     result = op1 - op2;
     NEXT_STATE.REGS[0b1111] = result;   //chequear esto resetear?????????? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 void execute_CMP_imm() {
     if (DEBUG == 1) {printf("execute_SUBSI\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = imm;
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = imm;
     result = op1 - op2;
     NEXT_STATE.REGS[0b1111] = result;
 }
 
 void execute_ANDS() {
     if (DEBUG == 1) {printf("execute_ANDS\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
 
     switch (shift) {
     case 0b00:        // LSL
@@ -165,7 +165,7 @@ void execute_ANDS() {
         }
         break;
     case 0b11:
-        int64_t aux = op2;
+        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -179,8 +179,8 @@ void execute_ANDS() {
 
 void execute_EOR() {
     if (DEBUG == 1) {printf("execute_EOR\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
 
     switch (shift) {
     case 0b00:        // LSL
@@ -198,7 +198,7 @@ void execute_EOR() {
         }
         break;
     case 0b11:
-        int64_t aux = op2;
+        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -213,8 +213,8 @@ void execute_EOR() {
 
 void execute_ORR() {
     if (DEBUG == 1) {printf("execute_ORR\n");}
-    int64_t op1 = CURRENT_STATE.REGS[rn];
-    int64_t op2 = CURRENT_STATE.REGS[rm];
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
+    uint64_t op2 = CURRENT_STATE.REGS[rm];
 
     switch (shift) {
     case 0b00:        // LSL
@@ -232,7 +232,7 @@ void execute_ORR() {
         }
         break;
     case 0b11:
-        int64_t aux = op2;
+        uint64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
