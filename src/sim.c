@@ -165,7 +165,7 @@ void execute_ANDS() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
+        int64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -198,7 +198,7 @@ void execute_EOR() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
+        int64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
@@ -232,7 +232,7 @@ void execute_ORR() {
         }
         break;
     case 0b11:
-        uint64_t aux = op2;
+        int64_t aux = op2;
         op2 = op2 >> shift;
         op2 = op2 | (aux << (64-shift));
         break;
