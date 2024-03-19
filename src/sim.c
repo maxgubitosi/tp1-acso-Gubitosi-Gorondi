@@ -174,7 +174,7 @@ void execute_ANDS() {
         break;
     }
     result = op1 & op2;
-    CURRENT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = result;
 }
 
 void execute_EOR() {
@@ -187,7 +187,9 @@ void execute_EOR() {
     switch (shift) {
     case 0b00:        // LSL
         printf("entra en LSL\n");
+        printf("op2 pre: %d\n", op2);
         op2 = op2 << imm;
+        printf("op2 pos: %d\n", op2);
         break;
     case 0b01:       // LSR
         printf("entra en LSR\n");
@@ -212,7 +214,7 @@ void execute_EOR() {
         break;
     }
     result = op1 ^ op2;
-    CURRENT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = result;
 
 }
 
@@ -246,7 +248,7 @@ void execute_ORR() {
         break;
     }
     result = op1 | op2;
-    CURRENT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = result;
 
 }
 
