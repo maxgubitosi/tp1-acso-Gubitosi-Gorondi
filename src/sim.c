@@ -152,22 +152,22 @@ void execute_ANDS() {
 
     switch (shift) {
     case 0b00:        // LSL
-        op2 = op2 << shift;
+        op2 = op2 << imm;
         break;
     case 0b01:       // LSR
-        op2 = op2 >> shift;
+        op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
         if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            op2 = op2 >> shift;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 >> imm;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
         } else {
-            op2 = op2 >> shift;
+            op2 = op2 >> imm;
         }
         break;
     case 0b11:
-        op2 = op2 >> shift;
-        op2 = op2 | (aux << (64-shift));
+        op2 = op2 >> imm;
+        op2 = op2 | (aux << (64-imm));
         break;
     default:
         printf("Error en execute_ANDS\n");    
@@ -184,23 +184,26 @@ void execute_EOR() {
     uint64_t aux = op2;
 
     switch (shift) {
+        printf("shift: %d\n", shift);
+
     case 0b00:        // LSL
-        op2 = op2 << shift;
+        printf("entra en LSL\n");
+        op2 = op2 << imm;
         break;
     case 0b01:       // LSR
-        op2 = op2 >> shift;
+        op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
         if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            op2 = op2 >> shift;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 >> imm;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
         } else {
-            op2 = op2 >> shift;
+            op2 = op2 >> imm;
         }
         break;
     case 0b11:
-        op2 = op2 >> shift;
-        op2 = op2 | (aux << (64-shift));
+        op2 = op2 >> imm;
+        op2 = op2 | (aux << (64-imm));
         break;
     default:
         printf("Error en execute_EOR\n");    
@@ -219,22 +222,22 @@ void execute_ORR() {
 
     switch (shift) {
     case 0b00:        // LSL
-        op2 = op2 << shift;
+        op2 = op2 << imm;
         break;
     case 0b01:       // LSR
-        op2 = op2 >> shift;
+        op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
         if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            op2 = op2 >> shift;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 >> imm;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
         } else {
-            op2 = op2 >> shift;
+            op2 = op2 >> imm;
         }
         break;
     case 0b11:
-        op2 = op2 >> shift;
-        op2 = op2 | (aux << (64-shift));
+        op2 = op2 >> imm;
+        op2 = op2 | (aux << (64-imm));
         break;
     default:
         printf("Error en execute_ORR\n");    
@@ -382,7 +385,7 @@ void decode()
     if (opcode == 0b11101011001) {
         if (DEBUG == 1) {printf("CMP \n opcode: %d\n", opcode);}
         // CMP
-        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000001f0;   // mask bits 5-9
         rn = rn >> 5;
         rm = curr_instr & 0x001f0000;   // mask bits 16-20
@@ -394,7 +397,7 @@ void decode()
     if (opcode == 0b11101010000 || opcode == 0b11101010010 || opcode == 0b11101010100 || opcode == 0b11101010110) {
         if (DEBUG == 1) {printf("ANDS \n opcode: %d\n", opcode);}
         // ANDS (shifted register)
-        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         rm = curr_instr & 0x001f0000;   // mask bits 16-20
@@ -410,7 +413,7 @@ void decode()
     if (opcode == 0b11001010000 || opcode == 0b11001010010 || opcode == 0b11001010100 || opcode == 0b11001010110) {
         if (DEBUG == 1) {printf("EOR \n opcode: %d\n", opcode);}
         // EOR (shifted register)
-        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         rm = curr_instr & 0x001f0000;   // mask bits 16-20
@@ -426,7 +429,7 @@ void decode()
     if (opcode == 0b10101010000  || opcode == 0b10101010010 || opcode == 0b10101010100 || opcode == 0b10101010110) {
         if (DEBUG == 1) {printf("ORR \n opcode: %d\n", opcode);}
         // OOR (shifted register)
-        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         rm = curr_instr & 0x001f0000;   // mask bits 16-20
@@ -444,7 +447,7 @@ void decode()
         if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %d\n", opcode);}
 
         // ADDS (extended register)
-        // mask last 4 bits
+        // mask bits 0-4
         rd = curr_instr & 0x0000000f;
         // mask bits 5-9 bits
         rn = curr_instr & 0x000001f0;
@@ -463,7 +466,7 @@ void decode()
     // SUBS IMMEDIATE
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
         if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
-        rd = curr_instr & 0x0000000f;  // mask last 4 bits
+        rd = curr_instr & 0x0000000f;  // mask bits 0-4
         rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
         rn = rn >> 5; 
         imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
