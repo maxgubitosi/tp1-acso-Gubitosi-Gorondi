@@ -173,7 +173,7 @@ void execute_ANDS() {
         printf("Error en execute_ANDS\n");    
         break;
     }
-    result = op1 & op2;
+    result = op1 & op2;  // asi modifica los flags
     NEXT_STATE.REGS[rd] = result;
 }
 
@@ -187,9 +187,7 @@ void execute_EOR() {
     switch (shift) {
     case 0b00:        // LSL
         printf("entra en LSL\n");
-        printf("op2 pre: %d\n", op2);
         op2 = op2 << imm;
-        printf("op2 pos: %d\n", op2);
         break;
     case 0b01:       // LSR
         printf("entra en LSR\n");
@@ -213,8 +211,7 @@ void execute_EOR() {
         printf("Error en execute_EOR\n");    
         break;
     }
-    result = op1 ^ op2;
-    NEXT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = op1 ^ op2;   // devuelve el resultado directo de la operacion para no modificar el result y que cambien los flags
 
 }
 
@@ -247,8 +244,7 @@ void execute_ORR() {
         printf("Error en execute_ORR\n");    
         break;
     }
-    result = op1 | op2;
-    NEXT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = op1 | op2;  // no setea flags
 
 }
 
