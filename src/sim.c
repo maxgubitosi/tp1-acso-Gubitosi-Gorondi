@@ -10,6 +10,20 @@
 #define HLT 3
 #define SUBS 4
 #define SUBSI 5
+#define CMP 6
+#define CMPI 7
+#define ANDS 8
+#define EOR 9
+#define ORR 10
+#define LSL 11
+#define LSR 12
+#define STUR 13
+#define STURB 14
+#define STURH 15
+#define LDUR 16
+#define LDURH 17
+#define LDURB 18
+#define MOVZ 19
 
 
 // probar enummerate
@@ -24,13 +38,13 @@ void fetch() {
 
 // INSTRUCCIONES A IMPLEMENTAR:
 /*
-    1. ADDS
-    2. SUBS
-    3. HLT
-    4. CMP
-    5. ANDS
-    6. EOR
-    7. ORR
+    1. ADDS --
+    2. SUBS --
+    3. HLT --
+    4. CMP --
+    5. ANDS --
+    6. EOR --
+    7. ORR --
     8. B
     9. BR
     10. B.COND
@@ -58,6 +72,7 @@ uint32_t rd;
 uint32_t rn;
 uint32_t rm;
 uint32_t imm;
+uint32_t shift;
 uint64_t result;
 
 /* IDEA: hacer un struct con los instructions:
@@ -72,8 +87,11 @@ uint64_t result;
 
 */
 
+
+
 // ------------------------- EXECUTE -------------------------
 
+// EXECUTE SPECIFIC INSTRUCTIONS
 void execute_ADDS_ext() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
     int64_t op1 = CURRENT_STATE.REGS[rn];
@@ -110,6 +128,125 @@ void execute_HLT() {
     RUN_BIT = FALSE;
 }
 
+void execute_CMP() {
+    if (DEBUG == 1) {printf("execute_CMP\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+    result = op1 - op2;
+    NEXT_STATE.REGS[0b1111] = result;   //chequear esto resetear?????????? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+void execute_CMP_imm() {
+    if (DEBUG == 1) {printf("execute_SUBSI\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = imm;
+    result = op1 - op2;
+    NEXT_STATE.REGS[0b1111] = result;
+}
+
+void execute_ANDS() {
+    if (DEBUG == 1) {printf("execute_ANDS\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+
+    switch (shift) {
+    case 0b00:        // LSL
+        op2 = op2 << shift;
+        break;
+    case 0b01:       // LSR
+        op2 = op2 >> shift;
+        break;
+    case 0b10:      // ASR
+        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            op2 = op2 >> shift;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+        } else {
+            op2 = op2 >> shift;
+        }
+        break;
+    case 0b11:
+        uint64_t aux = op2;
+        op2 = op2 >> shift;
+        op2 = op2 | (aux << (64-shift));
+        break;
+    default:
+        printf("Error en execute_ANDS\n");    
+        break;
+    }
+    result = op1 & op2;
+    CURRENT_STATE.REGS[rd] = result;
+}
+
+void execute_EOR() {
+    if (DEBUG == 1) {printf("execute_EOR\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+
+    switch (shift) {
+    case 0b00:        // LSL
+        op2 = op2 << shift;
+        break;
+    case 0b01:       // LSR
+        op2 = op2 >> shift;
+        break;
+    case 0b10:      // ASR
+        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            op2 = op2 >> shift;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+        } else {
+            op2 = op2 >> shift;
+        }
+        break;
+    case 0b11:
+        uint64_t aux = op2;
+        op2 = op2 >> shift;
+        op2 = op2 | (aux << (64-shift));
+        break;
+    default:
+        printf("Error en execute_EOR\n");    
+        break;
+    }
+    result = op1 ^ op2;
+    CURRENT_STATE.REGS[rd] = result;
+
+}
+
+void execute_ORR() {
+    if (DEBUG == 1) {printf("execute_ORR\n");}
+    int64_t op1 = CURRENT_STATE.REGS[rn];
+    int64_t op2 = CURRENT_STATE.REGS[rm];
+
+    switch (shift) {
+    case 0b00:        // LSL
+        op2 = op2 << shift;
+        break;
+    case 0b01:       // LSR
+        op2 = op2 >> shift;
+        break;
+    case 0b10:      // ASR
+        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            op2 = op2 >> shift;
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> shift); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+        } else {
+            op2 = op2 >> shift;
+        }
+        break;
+    case 0b11:
+        uint64_t aux = op2;
+        op2 = op2 >> shift;
+        op2 = op2 | (aux << (64-shift));
+        break;
+    default:
+        printf("Error en execute_ORR\n");    
+        break;
+    }
+    result = op1 | op2;
+    CURRENT_STATE.REGS[rd] = result;
+
+}
+
+
+// GENERAL EXECUTE FUNCTIONS
 void set_flags() {
     if (DEBUG == 1) {printf("entra en función set_flags\n");}
 
@@ -124,6 +261,8 @@ void set_flags() {
         NEXT_STATE.FLAG_Z = 0;
     }
 }
+
+
 
 void execute() {
     if (DEBUG == 1) {printf("execute_funcion\n");}
@@ -143,7 +282,49 @@ void execute() {
         case SUBSI:
             execute_SUBS_imm();
             break;
-
+        case CMP:
+            execute_CMP();
+            break;
+        case CMPI:
+            execute_CMP_imm();
+            break;
+        case ANDS:
+            execute_ANDS();
+            break;
+        case EOR:
+            execute_EOR();
+            break;
+        case ORR:
+            execute_ORR();
+            break;
+        case LSL:
+            // execute_LSL();
+            break;
+        case LSR:
+            // execute_LSR();
+            break;
+        case STUR:
+            // execute_STUR();
+            break;
+        case STURB:
+            // execute_STURB();
+            break;
+        case STURH:
+            // execute_STURH();
+            break;
+        case LDUR:
+            // execute_LDUR();
+            break;
+        case LDURH:
+            // execute_LDURH();
+            break;
+        case LDURB:
+            // execute_LDURB();
+            break;
+        case MOVZ:
+            // execute_MOVZ();
+            break;
+        
         default:
             break;
     }
@@ -151,7 +332,10 @@ void execute() {
     NEXT_STATE.PC += 4;
 }
 
+
+
 // ------------------------- DECODE -------------------------
+
 void decode()
 {
     if (DEBUG == 1) {
@@ -161,14 +345,13 @@ void decode()
     
     // 1. identify opcode format:
     
-    // case B: B or BR
-    uint32_t opcode = curr_instr >> 26;
-    
-    opcode = curr_instr >> 21;
+    uint32_t opcode = curr_instr >> 21;              // opcode size: 11 bits
+
     // HLT
     if (opcode == 0b11010100010) {
         instr_name = HLT;
     }
+
     //  ADDS EXTENDED
     if (opcode == 0b10101011000) { // quizas es 0b10101011000 segun tp
         if (DEBUG == 1) {printf("ADDS EXTENDED \n opcode: %d\n", opcode);}
@@ -185,7 +368,7 @@ void decode()
     // SUBS EXTENDED
     if (opcode == 0b11101011000) { // era 0b11101011001
         if (DEBUG == 1) {printf("SUBS EXTENDED \n opcode: %d\n", opcode);}
-        // ADDS (extended register)
+        // SUBS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
         rn = rn >> 5;
@@ -195,7 +378,67 @@ void decode()
         instr_name = SUBS;
     }
 
-    opcode = opcode >> 1; // shiftea total 22
+    // CMP
+    if (opcode == 0b11101011001) {
+        if (DEBUG == 1) {printf("CMP \n opcode: %d\n", opcode);}
+        // CMP
+        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rn = curr_instr & 0x000001f0;   // mask bits 5-9
+        rn = rn >> 5;
+        rm = curr_instr & 0x001f0000;   // mask bits 16-20
+        rm = rm >> 16;                  // shift 16 bits 
+        instr_name = CMP;
+    }
+
+    // ANDS(shifted register)
+    if (opcode == 0b11101010000 || opcode == 0b11101010010 || opcode == 0b11101010100 || opcode == 0b11101010110) {
+        if (DEBUG == 1) {printf("ANDS \n opcode: %d\n", opcode);}
+        // ANDS (shifted register)
+        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        rm = curr_instr & 0x001f0000;   // mask bits 16-20
+        rm = rm >> 16;
+        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
+        imm = imm >> 10;
+        shift = curr_instr & 0x00c00000;  // mask bits 22-23
+        shift = shift >> 22;
+        instr_name = ANDS;
+    }
+
+    // EOR(shifted register)
+    if (opcode == 0b11001010000 || opcode == 0b11001010010 || opcode == 0b11001010100 || opcode == 0b11001010110) {
+        if (DEBUG == 1) {printf("EOR \n opcode: %d\n", opcode);}
+        // EOR (shifted register)
+        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        rm = curr_instr & 0x001f0000;   // mask bits 16-20
+        rm = rm >> 16;
+        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
+        imm = imm >> 10;
+        shift = curr_instr & 0x00c00000;  // mask bits 22-23
+        shift = shift >> 22;
+        instr_name = EOR;
+    }
+
+    // ORR(shifted register)
+    if (opcode == 0b10101010000  || opcode == 0b10101010010 || opcode == 0b10101010100 || opcode == 0b10101010110) {
+        if (DEBUG == 1) {printf("ORR \n opcode: %d\n", opcode);}
+        // OOR (shifted register)
+        rd = curr_instr & 0x0000001f;   // mask last 4 bits
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        rm = curr_instr & 0x001f0000;   // mask bits 16-20
+        rm = rm >> 16;
+        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
+        imm = imm >> 10;
+        shift = curr_instr & 0x00c00000;  // mask bits 22-23
+        shift = shift >> 22;
+        instr_name = ORR;
+    }
+
+    opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
     if (opcode == 0b1011000100 || opcode == 0b1011000101) { 
         if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %d\n", opcode);}
@@ -223,27 +466,34 @@ void decode()
         rd = curr_instr & 0x0000000f;  // mask last 4 bits
         rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
         rn = rn >> 5; 
-        imm = curr_instr & 0x003ffc00; // mask bits 16-21 bits (12)
+        imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
         uint32_t shift = opcode & 0b0000000001;
         if (shift == 0b0000000000) {
+            if (DEBUG == 1) {printf("No shift\n");}
             imm = imm >> 10;
         } else if (shift == 0b0000000001) {
-            // pass
+            if (DEBUG == 1) {printf("shift\n");}
+            imm = imm << 2;
         } 
         instr_name = SUBSI;
     }
 
-    // SUBS IMMEDIATE
-
-
-    // // B (pag 550) 
-    // if (opcode == 0b000101) {
-    //     // execute_B();
-    // }
-    // // BR (pag 562)
-    // else if (opcode == 0b110101) {
-    //     // execute_BR();
-    // }
+    // CMP IMMEDIATE
+    if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
+        if (DEBUG == 1) {printf("CMP IMMEDIATE \n opcode: %d\n", opcode);}
+        rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
+        rn = rn >> 5; 
+        imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
+        uint32_t shift = opcode & 0b0000000001;
+        if (shift == 0b0000000000) {
+            if (DEBUG == 1) {printf("No shift\n");}
+            imm = imm >> 10;
+        } else if (shift == 0b0000000001) {
+            if (DEBUG == 1) {printf("Shift\n");}
+            imm = imm << 2;
+        } 
+        instr_name = CMPI;
+    }
 
     // // case CB:  
     // opcode = curr_instr >> 24;
