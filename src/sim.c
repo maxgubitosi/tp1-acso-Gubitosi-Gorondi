@@ -146,10 +146,8 @@ void execute() {
 
         default:
             break;
-        
-    set_flags();
-
     }
+    set_flags();
     NEXT_STATE.PC += 4;
 }
 
