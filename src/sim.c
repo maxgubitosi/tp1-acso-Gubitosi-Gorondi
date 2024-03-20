@@ -268,8 +268,7 @@ void execute_LSR() {
         printf("curr: %x\n", curr_instr);
     }
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-
-    NEXT_STATE.REGS[rd] = op1 >> (63 - imm);
+    NEXT_STATE.REGS[rd] = op1 >> immr;
 }
 
 void execute_MOVZ() {
@@ -481,7 +480,17 @@ void decode()
         instr_name = MOVZ;
     }
 
-
+    // STUR
+    // if (opcode == 0b11111000000) {
+    //     if (DEBUG == 1) {printf("STUR \n opcode: %d\n", opcode);}
+    //     // STUR
+    //     rd = curr_instr & 0x0000001f;   // mask bits 0-4
+    //     rn = curr_instr & 0x000003e0;   // mask bits 5-9
+    //     rn = rn >> 5;
+    //     imm = curr_instr & 0x003ffc00;  // mask bits 10-21
+    //     imm = imm >> 10;
+    //     instr_name = STUR;
+    // }
 
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
@@ -551,7 +560,7 @@ void decode()
         immr = 0x003f0000;              // mask bits 16-21
         immr = immr >> 16;
         if (imm == 0b111111) {
-            if (DEBUG == 1) {printf("LSL con imm == 0b111111\n Entonces es LSR!!");}
+            if (DEBUG == 1) {printf("LSL con imm == 0b111111\n Entonces es LSR!!\n");}
             instr_name = LSR;
         }
         else {instr_name = LSL;}
