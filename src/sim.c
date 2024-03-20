@@ -257,7 +257,7 @@ void execute_LSL() {                                    // QUE HAGO CON EL immr?
         printf("curr: %x\n", curr_instr);
     }
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-    NEXT_STATE.REGS[rd] = op1 << (64 - immr);
+    NEXT_STATE.REGS[rd] = op1 << (63 - imm);
 }
 
 void execute_LSR() {
