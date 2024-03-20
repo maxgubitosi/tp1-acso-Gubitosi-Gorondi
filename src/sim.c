@@ -790,31 +790,31 @@ void decode()
         if (imm26 >> 18 == 0b1) {         // si es negativo 
             if (DEBUG == 1) {
                 printf("entra en el if imm26 (es neg\n");
-                printf("imm26 pre: %d\n", imm26);}  
+                printf("imm26 pre: %ld\n", imm26);}  
             imm26 = imm26 | 0xfffffffffff80000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
-            if (DEBUG == 1) {printf("imm26 post: %d\n", imm26);}
+            if (DEBUG == 1) {printf("imm26 post: %ld\n", imm26);}
         }
         imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
-        if (DEBUG == 1) {printf("imm26 final __: %d\n", imm26);}
+        if (DEBUG == 1) {printf("imm26 final __: %ld\n", imm26);}
 
         // sub casos del aux1
         switch (aux1) {
-        case 000: // BEQ
+        case 0b000: // BEQ
             instr_name = BEQ;
             break;
-        case 001: // BNE
+        case 0b001: // BNE
             instr_name = BNE;
             break;
-        case 100: // BGT
+        case 0b100: // BGT
             instr_name = BGT;
             break;
-        case 011: // BLT
+        case 0b011: // BLT
             instr_name = BLT;
             break;
-        case 010: // BGE
+        case 0b010: // BGE
             instr_name = BGE;
             break;
-        case 101: // BLE
+        case 0b101: // BLE
             instr_name = BLE;
             break;
         default:
