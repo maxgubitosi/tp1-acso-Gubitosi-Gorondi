@@ -260,9 +260,14 @@ void execute_LSL() {                                    // QUE HAGO CON EL immr?
 void execute_LSR() {
     if (DEBUG == 1) {printf("execute_LSR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-    uint64_t aux = op1;
-    // result = op1 << (immr % 64);            // usa mod 
+    // uint64_t aux = op1;
+    result = op1 << (immr % 64);            // usa mod 
     NEXT_STATE.REGS[rd] = result;
+}
+
+void execute_MOVZ() {
+    if (DEBUG == 1) {printf("execute_MOVZ\n");}
+    NEXT_STATE.REGS[rd] = imm;
 }
 
 
@@ -343,7 +348,7 @@ void execute() {
             // execute_LDURB();
             break;
         case MOVZ:
-            // execute_MOVZ();
+            execute_MOVZ();
             break;
         
         default:
@@ -458,6 +463,17 @@ void decode()
         shift = shift >> 22;
         instr_name = ORR;
     }
+
+    // MOVZ
+    if (opcode == 0b11010010100) {
+        if (DEBUG == 1) {printf("MOVZ \n opcode: %d\n", opcode);}
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
+        imm = curr_instr & 0x001fffe0;  // mask bits 5-20
+        imm = imm >> 5;
+        instr_name = MOVZ;
+    }
+
+
 
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
