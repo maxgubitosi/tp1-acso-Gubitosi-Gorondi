@@ -774,10 +774,15 @@ void decode()
         aux1 = curr_instr & 0x0000000f;   // mask bits 0-3
         imm26 = curr_instr & 0x00ffffe0;  // mask bits 5-23 (imm19 pero uso la variable global definida)
         imm26 = imm26 >> 5;
-        if (imm26 >> 18 == 0b1) {         // si es negativo   
+        if (imm26 >> 18 == 0b1) {         // si es negativo 
+            if (DEBUG == 1) {
+                printf("entra en el if imm26 (es neg\n");
+                printf("imm26 pre: %d\n", imm26);}  
             imm26 = imm26 | 0xfffffffffff80000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
+            if (DEBUG == 1) {printf("imm26 post: %d\n", imm26);}
         }
         imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
+        if (DEBUG == 1) {printf("imm26 final __: %d\n", imm26);}
 
         // sub casos del aux1
         switch (aux1) {
