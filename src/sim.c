@@ -288,6 +288,48 @@ void execute_STUR() {
     mem_write_32(base_address + 4, aux2);
 }
 
+void execute_STURB() {
+    if (DEBUG == 1) {printf("execute_STURB\n");}
+    uint32_t byte1 = CURRENT_STATE.REGS[rt];
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    byte1 = byte1 & 0xff; 
+    aux1 = mem_read_32(base_address);
+    result = (0xffffff00 & aux1) | byte1;
+    mem_write_32(base_address, result); 
+}
+
+void execute_STURH() {
+    if (DEBUG == 1) {printf("execute_STURH\n");}
+    uint32_t half_word = CURRENT_STATE.REGS[rt];
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    half_word = half_word & 0xffff; 
+    aux1 = mem_read_32(base_address);
+    result = (0xffff0000 & aux1) | half_word;
+    mem_write_32(base_address, result); 
+}
+
+void execute_LDUR() {
+    if (DEBUG == 1) {printf("execute_LDUR\n");}
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    aux1 = mem_read_32(base_address);
+    aux2 = mem_read_32(base_address + 4);
+    NEXT_STATE.REGS[rt] = (aux2 << 32) | aux1;
+}
+
+void execute_LDURH() {
+    if (DEBUG == 1) {printf("execute_LDURH\n");}
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    aux1 = mem_read_32(base_address);
+    NEXT_STATE.REGS[rt] = aux1 & 0x0000ffff;
+}
+
+void execute_LDURB() {
+    if (DEBUG == 1) {printf("execute_LDURB\n");}
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    aux1 = mem_read_32(base_address);
+    NEXT_STATE.REGS[rt] = aux1 & 0x000000ff;
+}
+
 
 // GENERAL EXECUTE FUNCTIONS
 void set_flags() {
@@ -351,19 +393,19 @@ void execute() {
             execute_STUR();
             break;
         case STURB:
-            // execute_STURB();
+            execute_STURB();
             break;
         case STURH:
-            // execute_STURH();
+            execute_STURH();
             break;
         case LDUR:
-            // execute_LDUR();
+            execute_LDUR();
             break;
         case LDURH:
-            // execute_LDURH();
+            execute_LDURH();
             break;
         case LDURB:
-            // execute_LDURB();
+            execute_LDURB();
             break;
         case MOVZ:
             execute_MOVZ();
@@ -501,6 +543,62 @@ void decode()
         imm = imm >> 12;
         instr_name = STUR;
     }
+
+    // STURB
+    if (opcode == 0b00111000000) {
+        if (DEBUG == 1) {printf("STURB \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = STURB;
+    }
+
+    // STURH
+    if (opcode == 0b01111000000) {
+        if (DEBUG == 1) {printf("STURH \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = STURH;
+    }
+
+    // LDUR
+    if (opcode == 0b11111000010) {
+        if (DEBUG == 1) {printf("LDUR \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = LDUR;
+    }
+
+    // LDURB
+    if (opcode == 0b00111000010) {
+        if (DEBUG == 1) {printf("LDURB \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = LDURB;
+    }
+
+    // LDURH
+    if (opcode == 0b01111000010) {
+        if (DEBUG == 1) {printf("LDURH \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = LDURH;
+    }
+
 
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
