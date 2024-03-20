@@ -80,10 +80,10 @@ uint32_t rn;
 uint32_t rm;
 uint32_t imm;
 uint32_t shift;
-uint64_t result;
+int64_t result;                     // RECIEN CAMBIE RESULT, AUX1 y AUX2 A INT64_T (ERAN UINT64) PARA QUE NO SE ROMPA CUANDO HAGO LA RESTA, CHEQUEAR QUE NO HAYA ROTO OTRAS COSAS !?!?!!!!????
 uint32_t immr;
-uint64_t aux1;
-uint64_t aux2;
+int64_t aux1;
+int64_t aux2;
 int64_t imm26;
 
 /* IDEA: hacer un struct con los instructions:
@@ -130,7 +130,7 @@ void execute_SUBS_imm() {
     if (DEBUG == 1) {printf("execute_SUBSI\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = imm;
-    result = op1 - op2;
+    result = op1 - op2;                            // ACA RESTA Y COMO SON UINT EL FLAG N NUSNCA VA VER QUE ES NEGATIVO. ASIQUE VOY A CAMBIAR LO DE FLAG A QUE MIRE EL PRIMER INT Y LISTO.
     NEXT_STATE.REGS[rd] = result;
 }
 
