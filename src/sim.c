@@ -5,26 +5,47 @@
 
 #define DEBUG 1        // 1 para debuggear
 
-#define ADDS 1
-#define ADDSI 2
-#define HLT 3
-#define SUBS 4
-#define SUBSI 5
-#define CMP 6
-#define CMPI 7
-#define ANDS 8
-#define EOR 9
-#define ORR 10
-#define LSL 11
-#define LSR 12
-#define STUR 13
-#define STURB 14
-#define STURH 15
-#define LDUR 16
-#define LDURH 17
-#define LDURB 18
-#define MOVZ 19
+// #define ADDS 1
+// #define ADDSI 2
+// #define HLT 3
+// #define SUBS 4
+// #define SUBSI 5
+// #define CMP 6
+// #define CMPI 7
+// #define ANDS 8
+// #define EOR 9
+// #define ORR 10
+// #define LSL 11
+// #define LSR 12
+// #define STUR 13
+// #define STURB 14
+// #define STURH 15
+// #define LDUR 16
+// #define LDURH 17
+// #define LDURB 18
+// #define MOVZ 19
 
+typedef enum {
+    ADDS = 1,
+    ADDSI,
+    HLT,
+    SUBS,
+    SUBSI,
+    CMP,
+    CMPI,
+    ANDS,
+    EOR,
+    ORR,
+    LSL,
+    LSR,
+    STUR,
+    STURB,
+    STURH,
+    LDUR,
+    LDURH,
+    LDURB,
+    MOVZ
+} instr_t;
 
 // probar enummerate
 
@@ -67,7 +88,7 @@ void fetch() {
 
 
 
-int instr_name=0;
+instr_t instr_name=0;
 uint32_t rd;
 uint32_t rt;
 uint32_t rn;
