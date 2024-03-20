@@ -252,8 +252,16 @@ void execute_ORR() {
 void execute_LSL() {                                    // QUE HAGO CON EL immr? HAY QUE ROTAR? !!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if (DEBUG == 1) {printf("execute_LSL\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
+    // uint64_t aux = op1;
+    result = op1 << (immr % 64);            // usa mod 
+    NEXT_STATE.REGS[rd] = result;
+}
+
+void execute_LSR() {
+    if (DEBUG == 1) {printf("execute_LSR\n");}
+    uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t aux = op1;
-    result = op1 << (imm % 64);            // usa mod 
+    // result = op1 << (immr % 64);            // usa mod 
     NEXT_STATE.REGS[rd] = result;
 }
 
@@ -314,7 +322,7 @@ void execute() {
             execute_LSL();
             break;
         case LSR:
-            // execute_LSR();
+            execute_LSR();
             break;
         case STUR:
             // execute_STUR();
@@ -508,21 +516,21 @@ void decode()
         instr_name = CMPI;
     }
 
-    // LSL (immediate)
+    // LSL y LSR (immediate)
     if (opcode == 0b1101001101) {
         if (DEBUG == 1) {printf("LSL \n opcode: %d\n", opcode);}
         imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
-        if (imm == 0b111111) {
-            if (DEBUG == 1) {printf("LSL con imm == 0b111111\n");}
-            return;
-        }
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         imm = imm >> 10;
         immr = 0x003f0000;              // mask bits 16-21
         immr = immr >> 16;
-        instr_name = LSL;
+        if (imm == 0b111111) {
+            if (DEBUG == 1) {printf("LSL con imm == 0b111111\n Entonces es LSR!!");}
+            instr_name = LSR;
+        }
+        else {instr_name = LSL;}
     }
 
     // // case CB:  
