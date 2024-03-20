@@ -144,7 +144,7 @@ void execute_CMP() {
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
     result = op1 - op2;
-    NEXT_STATE.REGS[0b1111] = result;   //chequear esto resetear?????????? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    NEXT_STATE.REGS[0b11111] = result;   //chequear esto resetear?????????? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 void execute_CMP_imm() {
@@ -152,7 +152,7 @@ void execute_CMP_imm() {
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = imm;
     result = op1 - op2;
-    NEXT_STATE.REGS[0b1111] = result;
+    NEXT_STATE.REGS[0b11111] = result;
 }
 
 void execute_ANDS() {
@@ -696,9 +696,9 @@ void decode()
 
         // ADDS (extended register)
         // mask bits 0-4
-        rd = curr_instr & 0x0000000f;
+        rd = curr_instr & 0x0000001f;
         // mask bits 5-9 bits
-        rn = curr_instr & 0x000001f0;
+        rn = curr_instr & 0x000003e0;
         rn = rn >> 5;
         // mask bits 10-21
         imm = curr_instr & 0x003ffc00; //imm12
@@ -714,7 +714,7 @@ void decode()
     // SUBS IMMEDIATE
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
         if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
-        rd = curr_instr & 0x0000000f;  // mask bits 0-4
+        rd = curr_instr & 0x0000001f;  // mask bits 0-4
         if (rd = 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
         rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
         rn = rn >> 5; 
