@@ -515,6 +515,7 @@ void execute() {
         usa la variable global curr_instr
         define instr_name según el opcode
         modifica variables globales según corresponda
+        va shifteando el opcode para ir comparando con los valores de los bits correspondientes
 */
 void decode()
 {
@@ -522,9 +523,6 @@ void decode()
         printf("decode\n");
         printf("curr_instr: %u\n", curr_instr); // imprimo instuccion actual para debug
     }
-    
-    // 1. identify opcode format:
-    
     uint32_t opcode = curr_instr >> 21;              // opcode size: 11 bits
 
     // HLT
@@ -533,9 +531,8 @@ void decode()
     }
 
     //  ADDS EXTENDED
-    if (opcode == 0b10101011000) { // quizas es 0b10101011000 segun tp
+    if (opcode == 0b10101011000) { 
         if (DEBUG == 1) {printf("ADDS EXTENDED \n opcode: %u\n", opcode);}
-        // ADDS (extended register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -546,9 +543,8 @@ void decode()
     }
 
     // SUBS EXTENDED
-    if (opcode == 0b11101011000) { // era 0b11101011001
+    if (opcode == 0b11101011000) { 
         if (DEBUG == 1) {printf("SUBS EXTENDED \n opcode: %u\n", opcode);}
-        // SUBS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
         rn = rn >> 5;
@@ -561,7 +557,6 @@ void decode()
     // CMP
     if (opcode == 0b11101011001) {
         if (DEBUG == 1) {printf("CMP \n opcode: %u\n", opcode);}
-        // CMP
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -573,7 +568,6 @@ void decode()
     // ANDS(shifted register)
     if (opcode == 0b11101010000 || opcode == 0b11101010010 || opcode == 0b11101010100 || opcode == 0b11101010110) {
         if (DEBUG == 1) {printf("ANDS \n opcode: %u\n", opcode);}
-        // ANDS (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -589,7 +583,6 @@ void decode()
     // EOR(shifted register)
     if (opcode == 0b11001010000 || opcode == 0b11001010010 || opcode == 0b11001010100 || opcode == 0b11001010110) {
         if (DEBUG == 1) {printf("EOR \n opcode: %u\n", opcode);}
-        // EOR (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -605,7 +598,6 @@ void decode()
     // ORR(shifted register)
     if (opcode == 0b10101010000  || opcode == 0b10101010010 || opcode == 0b10101010100 || opcode == 0b10101010110) {
         if (DEBUG == 1) {printf("ORR \n opcode: %u\n", opcode);}
-        // OOR (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -701,19 +693,15 @@ void decode()
         instr_name = BR;
     }
 
-    opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
+    opcode = opcode >> 1;        // opcode size: 10 bits
+
     // ADDS IMMEDIATE
     if (opcode == 0b1011000100 || opcode == 0b1011000101) { 
         if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %u\n", opcode);}
-
-        // ADDS (extended register)
-        // mask bits 0-4
-        rd = curr_instr & 0x0000001f;
-        // mask bits 5-9 bits
-        rn = curr_instr & 0x000003e0;
+        rd = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
-        // mask bits 10-21
-        imm = curr_instr & 0x003ffc00; //imm12
+        imm = curr_instr & 0x003ffc00;  // mask bits 10-21 (imm12)
         uint32_t shift = opcode & 0b0000000001;
         if (shift == 0b0000000000) {
             imm = imm >> 10;
@@ -742,7 +730,7 @@ void decode()
         instr_name = SUBSI;
     }
 
-    // // CMP IMMEDIATE
+    // // CMP IMMEDIATE (comentado porque tiene el mismo opcode que SUBS IMMEDIATE)
     // if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
     //     if (DEBUG == 1) {printf("CMP IMMEDIATE \n opcode: %d\n", opcode);}
     //     rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
@@ -767,7 +755,7 @@ void decode()
         rn = rn >> 5;
         imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
         imm = imm >> 10;
-        immr = curr_instr & 0x003f0000;              // mask bits 16-21
+        immr = curr_instr & 0x003f0000; // mask bits 16-21
         immr = immr >> 16;
         if (imm == 0b111111) {
             if (DEBUG == 1) {printf("LSL con imm == 0b111111\n Entonces es LSR!!\n");}
@@ -776,11 +764,12 @@ void decode()
         else {instr_name = LSL;}
     }
 
-    opcode = opcode >> 2;                             // opcode size: 8 bits
+    opcode = opcode >> 2;        // opcode size: 8 bits
+
     // B.COND
     if (opcode == 0b01010100) {
         if (DEBUG == 1) {printf("B.COND \n opcode: %u\n", opcode);}
-        aux1 = curr_instr & 0x0000000f;   // mask bits 0-3
+        aux1 = curr_instr & 0x0000000f;   // mask bits 0-3 (cond)
         imm26 = curr_instr & 0x00ffffe0;  // mask bits 5-23 (imm19 pero uso la variable global definida)
         imm26 = imm26 >> 5;
         if (imm26 >> 18 == 0b1) {         // si es negativo 
@@ -793,7 +782,7 @@ void decode()
         imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
         if (DEBUG == 1) {printf("imm26 final __: %ld\n", imm26);}
 
-        // sub casos del aux1
+        // sub casos del aux1 (cond)
         switch (aux1) {
         case 0b000: // BEQ
             instr_name = BEQ;
@@ -819,7 +808,8 @@ void decode()
         }
     }
 
-    opcode = opcode >> 2;                             // opcode size: 6 bits
+    opcode = opcode >> 2;        // opcode size: 6 bits
+
     // B
     if (opcode == 0b000101) {
         if (DEBUG == 1) {printf("B \n opcode: %u\n", opcode);}
@@ -830,10 +820,11 @@ void decode()
         imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
         instr_name = B;
     }
-
 }
 
 
+
+// ------------------------- MAIN FUNCTION -------------------------
 
 void process_instruction()
 {
