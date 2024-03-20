@@ -508,7 +508,7 @@ void decode()
 {
     if (DEBUG == 1) {
         printf("decode\n");
-        printf("curr_instr: %d\n", curr_instr); // imprimo instuccion actual para debug
+        printf("curr_instr: %u\n", curr_instr); // imprimo instuccion actual para debug
     }
     
     // 1. identify opcode format:
@@ -522,7 +522,7 @@ void decode()
 
     //  ADDS EXTENDED
     if (opcode == 0b10101011000) { // quizas es 0b10101011000 segun tp
-        if (DEBUG == 1) {printf("ADDS EXTENDED \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("ADDS EXTENDED \n opcode: %u\n", opcode);}
         // ADDS (extended register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -535,7 +535,7 @@ void decode()
 
     // SUBS EXTENDED
     if (opcode == 0b11101011000) { // era 0b11101011001
-        if (DEBUG == 1) {printf("SUBS EXTENDED \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("SUBS EXTENDED \n opcode: %u\n", opcode);}
         // SUBS (extended register)
         rd = curr_instr & 0x0000001f; 
         rn = curr_instr & 0x000003e0;
@@ -548,7 +548,7 @@ void decode()
 
     // CMP
     if (opcode == 0b11101011001) {
-        if (DEBUG == 1) {printf("CMP \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("CMP \n opcode: %u\n", opcode);}
         // CMP
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -560,7 +560,7 @@ void decode()
 
     // ANDS(shifted register)
     if (opcode == 0b11101010000 || opcode == 0b11101010010 || opcode == 0b11101010100 || opcode == 0b11101010110) {
-        if (DEBUG == 1) {printf("ANDS \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("ANDS \n opcode: %u\n", opcode);}
         // ANDS (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -576,7 +576,7 @@ void decode()
 
     // EOR(shifted register)
     if (opcode == 0b11001010000 || opcode == 0b11001010010 || opcode == 0b11001010100 || opcode == 0b11001010110) {
-        if (DEBUG == 1) {printf("EOR \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("EOR \n opcode: %u\n", opcode);}
         // EOR (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -592,7 +592,7 @@ void decode()
 
     // ORR(shifted register)
     if (opcode == 0b10101010000  || opcode == 0b10101010010 || opcode == 0b10101010100 || opcode == 0b10101010110) {
-        if (DEBUG == 1) {printf("ORR \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("ORR \n opcode: %u\n", opcode);}
         // OOR (shifted register)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
@@ -608,7 +608,7 @@ void decode()
 
     // MOVZ
     if (opcode == 0b11010010100) {
-        if (DEBUG == 1) {printf("MOVZ \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("MOVZ \n opcode: %u\n", opcode);}
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         imm = curr_instr & 0x001fffe0;  // mask bits 5-20
         imm = imm >> 5;
@@ -617,7 +617,7 @@ void decode()
 
     // STUR
     if (opcode == 0b11111000000) {
-        if (DEBUG == 1) {printf("STUR \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("STUR \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -628,7 +628,7 @@ void decode()
 
     // STURB
     if (opcode == 0b00111000000) {
-        if (DEBUG == 1) {printf("STURB \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("STURB \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -639,7 +639,7 @@ void decode()
 
     // STURH
     if (opcode == 0b01111000000) {
-        if (DEBUG == 1) {printf("STURH \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("STURH \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -650,7 +650,7 @@ void decode()
 
     // LDUR
     if (opcode == 0b11111000010) {
-        if (DEBUG == 1) {printf("LDUR \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("LDUR \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -661,7 +661,7 @@ void decode()
 
     // LDURB
     if (opcode == 0b00111000010) {
-        if (DEBUG == 1) {printf("LDURB \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("LDURB \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -672,7 +672,7 @@ void decode()
 
     // LDURH
     if (opcode == 0b01111000010) {
-        if (DEBUG == 1) {printf("LDURH \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("LDURH \n opcode: %u\n", opcode);}
         rt = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -683,7 +683,7 @@ void decode()
 
     // BR
     if (opcode == 0b11010110000) {
-        if (DEBUG == 1) {printf("BR \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("BR \n opcode: %u\n", opcode);}
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
         instr_name = BR;
@@ -692,7 +692,7 @@ void decode()
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
     if (opcode == 0b1011000100 || opcode == 0b1011000101) { 
-        if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("ADDS IMMEDIATE \n opcode: %u\n", opcode);}
 
         // ADDS (extended register)
         // mask bits 0-4
@@ -713,7 +713,7 @@ void decode()
 
     // SUBS IMMEDIATE
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
-        if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %u\n", opcode);}
         rd = curr_instr & 0x0000001f;  // mask bits 0-4
         if (rd == 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
         rn = curr_instr & 0x000003e0;  // mask bits 5-9 bits
@@ -749,7 +749,7 @@ void decode()
 
     // LSL y LSR (immediate)
     if (opcode == 0b1101001101) {
-        if (DEBUG == 1) {printf("LSL \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("LSL \n opcode: %u\n", opcode);}
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
@@ -767,7 +767,7 @@ void decode()
     opcode = opcode >> 2;                             // opcode size: 8 bits
     // B.COND
     if (opcode == 0b01010100) {
-        if (DEBUG == 1) {printf("B.COND \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("B.COND \n opcode: %u\n", opcode);}
         aux1 = curr_instr & 0x0000000f;   // mask bits 0-3
         imm26 = curr_instr & 0x00ffffe0;  // mask bits 5-23 (imm19 pero uso la variable global definida)
         imm26 = imm26 >> 5;
@@ -805,7 +805,7 @@ void decode()
     opcode = opcode >> 2;                             // opcode size: 6 bits
     // B
     if (opcode == 0b000101) {
-        if (DEBUG == 1) {printf("B \n opcode: %d\n", opcode);}
+        if (DEBUG == 1) {printf("B \n opcode: %u\n", opcode);}
         imm26 = curr_instr & 0x03ffffff;  // mask bits 0-25
         if (imm26 >> 25 == 0b1) {         // si es negativo   
             imm26 = imm26 | 0xfffffffffc000000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
