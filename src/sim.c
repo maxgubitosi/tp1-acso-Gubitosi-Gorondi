@@ -716,7 +716,7 @@ void decode()
         if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
         rd = curr_instr & 0x0000001f;  // mask bits 0-4
         if (rd = 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
-        rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
+        rn = curr_instr & 0x000003e0;  // mask bits 5-9 bits
         rn = rn >> 5; 
         imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
         uint32_t shift = opcode & 0b0000000001;
@@ -847,16 +847,7 @@ void decode()
 
 void process_instruction()
 {
-    /* execute one instruction here. You should use CURRENT_STATE and modify
-     * values in NEXT_STATE. You can call mem_read_32() and mem_write_32() to
-     * access memory. 
-     * 
-     * Sugerencia: hagan una funcion para decode()
-     *             y otra para execute()
-     * 
-     * */
     fetch();
     decode();
     execute();
-
 }
