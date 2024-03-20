@@ -292,30 +292,31 @@ void set_flags() {
 
 void execute() {
     if (DEBUG == 1) {printf("execute_funcion\n");}
+    uint8_t FLAGS = 0;
     switch (instr_name) {
         case ADDS:
-            execute_ADDS_ext();
+            execute_ADDS_ext(); FLAGS = 1; 
             break;
         case ADDSI:
-            execute_ADDS_imm();
+            execute_ADDS_imm(); FLAGS = 1;
             break;
         case HLT:
             execute_HLT();
             break;
         case SUBS:
-            execute_SUBS_ext();
+            execute_SUBS_ext(); FLAGS = 1;
             break;
         case SUBSI:
-            execute_SUBS_imm();
+            execute_SUBS_imm(); FLAGS = 1;
             break;
         case CMP:
-            execute_CMP();
+            execute_CMP(); FLAGS = 1;
             break;
         case CMPI:
-            execute_CMP_imm();
+            execute_CMP_imm(); FLAGS = 1;
             break;
         case ANDS:
-            execute_ANDS();
+            execute_ANDS(); FLAGS = 1;
             break;
         case EOR:
             execute_EOR();
@@ -354,7 +355,7 @@ void execute() {
         default:
             break;
     }
-    set_flags();
+    if (FLAGS) {set_flags();}
     NEXT_STATE.PC += 4;
 }
 
