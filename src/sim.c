@@ -261,9 +261,15 @@ void execute_LSL() {                                    // QUE HAGO CON EL immr?
 }
 
 void execute_LSR() {
-    if (DEBUG == 1) {printf("execute_LSR\n");}
+    if (DEBUG == 1) {
+        printf("execute_LSR\n");
+        printf("immr: %x\n", immr);
+        printf("imms: %x\n", imm);
+        printf("curr: %x\n", curr_instr);
+    }
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-    NEXT_STATE.REGS[rd] = op1 >> imm;
+
+    NEXT_STATE.REGS[rd] = op1 >> (63 - imm);
 }
 
 void execute_MOVZ() {
