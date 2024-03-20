@@ -5,7 +5,7 @@
 
 #define DEBUG 1        // 1 para debuggear
 
-typedef enum {
+typedef enum {         // enum para los nombres de las instrucciones -> las usa el switch de execute
     ADDS = 1,
     ADDSI,
     HLT,
@@ -36,6 +36,16 @@ typedef enum {
 } instr_t;
 
 uint32_t curr_instr;  // current instruction
+
+
+
+// ------------------------- FETCH -------------------------
+/*
+    - input: void
+    - output: void
+    - descripción: lee la instrucción de memoria en la dirección del PC y la guarda en la variable global curr_instr
+    - notas: usa la función mem_read_32 definida en el shell
+*/
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
     if (DEBUG == 1) {
@@ -44,37 +54,9 @@ void fetch() {
     }
 }
 
-// INSTRUCCIONES A IMPLEMENTAR:
-/*
-    1. ADDS --
-    2. SUBS --
-    3. HLT --
-    4. CMP --
-    5. ANDS --
-    6. EOR --
-    7. ORR --
-    8. B
-    9. BR
-    10. B.COND
-        - BEQ
-        - BNE
-        - BGT
-        - BLT
-        - BGE
-        - BLE
-    11. LSL --
-    12. LSR --
-    13. STUR --
-    14. STURB --
-    15. STURH --
-    16. LDUR --
-    17. LDURH --
-    18. LDURB --
-    19. MOVZ --
-*/
 
 
-
+// ------------------------- GLOBAL VARIABLES -------------------------
 instr_t instr_name=0;
 uint8_t FLAGS;
 uint8_t INCREASE_PC;
@@ -87,28 +69,24 @@ uint32_t imm;
 uint32_t shift;
 uint32_t immr;
 
-int64_t result;                     // RECIEN CAMBIE RESULT, AUX1 y AUX2 A INT64_T (ERAN UINT64) PARA QUE NO SE ROMPA CUANDO HAGO LA RESTA, CHEQUEAR QUE NO HAYA ROTO OTRAS COSAS !?!?!!!!????
+int64_t result;                     
 int64_t aux1;
 int64_t aux2;
 int64_t imm26;
 
-/* IDEA: hacer un struct con los instructions:
-    typedef struct instruction {
-        char *name;
-        uint32_t opcode;
-        char *type: // R, I, D, B, CB, IW;
-        uint32_t rd;
-        uint32_t rn;
-        uint32_t rm;
-    } instruction_t;
 
+
+// ------------------------- EXECUTE SPECIFIC INSTRUCTIONS-------------------------
+
+/*
+    - input: void
+    - output: void
+    - descripción: ejecutan la instrucción actual
+    - notas: 
+        usan las funciones mem_read_32 y mem_write_32 definidas en el shell, modifican el PC y los flags
+        son llamadas por la función execute
 */
 
-
-
-// ------------------------- EXECUTE -------------------------
-
-// EXECUTE SPECIFIC INSTRUCTIONS
 void execute_ADDS_ext() {
     if (DEBUG == 1) {printf("execute_ADDS\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
@@ -136,7 +114,7 @@ void execute_SUBS_imm() {
     if (DEBUG == 1) {printf("execute_SUBSI\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = imm;
-    result = op1 - op2;                            // ACA RESTA Y COMO SON UINT EL FLAG N NUSNCA VA VER QUE ES NEGATIVO. ASIQUE VOY A CAMBIAR LO DE FLAG A QUE MIRE EL PRIMER INT Y LISTO.
+    result = op1 - op2;                            
     NEXT_STATE.REGS[rd] = result;
 }
 
@@ -150,7 +128,7 @@ void execute_CMP() {
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
     result = op1 - op2;
-    NEXT_STATE.REGS[0b11111] = result;   //chequear esto resetear?????????? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    NEXT_STATE.REGS[0b11111] = result;  
 }
 
 void execute_CMP_imm() {
@@ -175,9 +153,9 @@ void execute_ANDS() {
         op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
-        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (op2>>63 == 0b1) {              
             op2 = op2 >> imm;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); 
         } else {
             op2 = op2 >> imm;
         }
@@ -190,7 +168,7 @@ void execute_ANDS() {
         printf("Error en execute_ANDS\n");    
         break;
     }
-    result = op1 & op2;  // asi modifica los flags
+    result = op1 & op2;  
     NEXT_STATE.REGS[rd] = result;
 }
 
@@ -212,9 +190,9 @@ void execute_EOR() {
         break;
     case 0b10:      // ASR
         printf("entra en ASR\n");
-        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (op2>>63 == 0b1) {              
             op2 = op2 >> imm;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); 
         } else {
             op2 = op2 >> imm;
         }
@@ -228,7 +206,7 @@ void execute_EOR() {
         printf("Error en execute_EOR\n");    
         break;
     }
-    NEXT_STATE.REGS[rd] = op1 ^ op2;   // devuelve el resultado directo de la operacion para no modificar el result y que cambien los flags
+    NEXT_STATE.REGS[rd] = op1 ^ op2;   
 
 }
 
@@ -246,9 +224,9 @@ void execute_ORR() {
         op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
-        if (op2>>63 == 0b1) {              // ver que onda uint aca si tamos usando bien. si es lo mismo ver si es neg que si el primer bit es 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (op2>>63 == 0b1) {              
             op2 = op2 >> imm;
-            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); //  A CHEQUAAAARRRRRRR !!!!!!!!!!!!
+            op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); 
         } else {
             op2 = op2 >> imm;
         }
@@ -258,14 +236,14 @@ void execute_ORR() {
         op2 = op2 | (aux << (64-imm));
         break;
     default:
-        printf("Error en execute_ORR\n");    
+        if (DEBUG == 1) {printf("Error en execute_ORR\n");}    
         break;
     }
-    NEXT_STATE.REGS[rd] = op1 | op2;  // no setea flags
+    NEXT_STATE.REGS[rd] = op1 | op2; 
 
 }
 
-void execute_LSL() {                                    // QUE HAGO CON EL immr? HAY QUE ROTAR? !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+void execute_LSL() {                                    
     if (DEBUG == 1) {
         printf("execute_LSL\n");
         printf("immr: %x\n", immr);
@@ -405,10 +383,10 @@ void execute_BLE() {
 
 
 
-// GENERAL EXECUTE FUNCTIONS
+// ------------------------- GENERAL EXECUTE FUNCTIONS -------------------------
+
 void set_flags() {
     if (DEBUG == 1) {printf("entra en función set_flags\n");}
-
     if (result < 0){
         NEXT_STATE.FLAG_N = 1;
     }else{
@@ -421,7 +399,17 @@ void set_flags() {
     }
 }
 
-
+/*
+    - input: void
+    - output: void
+    - descripción: ejecuta la instrucción actual (es la función principal de la ejecución)
+    - notas: 
+        llama a las funciones de ejecución específicas según el nombre de la instrucción
+        modifica el PC y los flags:
+            - con un switch case elige la instrucción correspondiente
+            - si corresponde setear flags cambia la variable global FLAGS a 1
+            - si no corresponde aumentar el PC cambia la variable global INCREASE_PC a 0 (el manejo del PC se hace dentro de la funcíon específica)
+*/
 void execute() {
     if (DEBUG == 1) {printf("execute_funcion\n");}
     FLAGS = 0;
@@ -519,7 +507,15 @@ void execute() {
 
 
 // ------------------------- DECODE -------------------------
-
+/*
+    - input: void
+    - output: void
+    - descripción: decodifica la instrucción actual y guarda los valores de los registros y las inmediatas en las variables globales correspondientes
+    - notas: 
+        usa la variable global curr_instr
+        define instr_name según el opcode
+        modifica variables globales según corresponda
+*/
 void decode()
 {
     if (DEBUG == 1) {
