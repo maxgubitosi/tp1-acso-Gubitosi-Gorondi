@@ -257,17 +257,13 @@ void execute_LSL() {                                    // QUE HAGO CON EL immr?
         printf("curr: %x\n", curr_instr);
     }
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-    // uint64_t aux = op1;
-    result = op1 << ((64 - immr) % 64);      // usa mod 
-    NEXT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = op1 << (64 - immr);
 }
 
 void execute_LSR() {
     if (DEBUG == 1) {printf("execute_LSR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
-    // uint64_t aux = op1;
-    result = op1 << (immr % 64);            // usa mod 
-    NEXT_STATE.REGS[rd] = result;
+    NEXT_STATE.REGS[rd] = op1 >> immr;
 }
 
 void execute_MOVZ() {
