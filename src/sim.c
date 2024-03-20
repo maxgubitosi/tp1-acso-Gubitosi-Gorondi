@@ -3,7 +3,7 @@
 #include <string.h>
 #include "shell.h"
 
-#define DEBUG 1        // 1 para debuggear
+#define DEBUG 0        // 1 para debuggear
 
 typedef enum {         // enum para los nombres de las instrucciones -> las usa el switch de execute
     ADDS = 1,
@@ -173,23 +173,22 @@ void execute_ANDS() {
 }
 
 void execute_EOR() {
-    printf("curr_instr: %d\n", curr_instr);
     if (DEBUG == 1) {printf("execute_EOR\n");}
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     uint64_t op2 = CURRENT_STATE.REGS[rm];
     uint64_t aux = op2;
-    printf("shift: %d, imm: %d\n", shift, imm);
+    if (DEBUG == 1){printf("shift: %d, imm: %d\n", shift, imm);}
     switch (shift) {
     case 0b00:        // LSL
-        printf("entra en LSL\n");
+        if (DEBUG == 1){printf("entra en LSL\n");}
         op2 = op2 << imm;
         break;
     case 0b01:       // LSR
-        printf("entra en LSR\n");
+        if (DEBUG == 1){printf("entra en LSR\n");}
         op2 = op2 >> imm;
         break;
     case 0b10:      // ASR
-        printf("entra en ASR\n");
+        if (DEBUG == 1){printf("entra en ASR\n");}
         if (op2>>63 == 0b1) {              
             op2 = op2 >> imm;
             op2 = op2 | ~(0xFFFFFFFFFFFFFFFF >> imm); 
@@ -198,12 +197,12 @@ void execute_EOR() {
         }
         break;
     case 0b11:   // ROR
-    printf("entra en ROR\n");
+    if (DEBUG == 1){printf("entra en ROR\n");}
         op2 = op2 >> imm;
         op2 = op2 | (aux << (64-imm));
         break;
     default:
-        printf("Error en execute_EOR\n");    
+        if (DEBUG == 1){printf("Error en execute_EOR\n");}    
         break;
     }
     NEXT_STATE.REGS[rd] = op1 ^ op2;   
