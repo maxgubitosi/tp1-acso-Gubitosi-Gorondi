@@ -715,7 +715,7 @@ void decode()
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
         if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
         rd = curr_instr & 0x0000001f;  // mask bits 0-4
-        if (rd = 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
+        if (rd == 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
         rn = curr_instr & 0x000003e0;  // mask bits 5-9 bits
         rn = rn >> 5; 
         imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
