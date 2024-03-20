@@ -74,7 +74,7 @@ uint32_t rm;
 uint32_t imm;
 uint32_t shift;
 uint64_t result;
-uint64_t immr;
+uint32_t immr;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -250,13 +250,15 @@ void execute_ORR() {
 }
 
 void execute_LSL() {                                    // QUE HAGO CON EL immr? HAY QUE ROTAR? !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if (DEBUG == 1) {printf("execute_LSL\n");}
-    printf("immr: %x\n", immr);
-    printf("imms: %x\n", imm);
-    printf("curr: %x\n", curr_instr);
+    if (DEBUG == 1) {
+        printf("execute_LSL\n");
+        printf("immr: %x\n", immr);
+        printf("imms: %x\n", imm);
+        printf("curr: %x\n", curr_instr);
+    }
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     // uint64_t aux = op1;
-    result = op1 << (immr % 64);            // usa mod 
+    result = op1 << ((64 - immr) % 64);      // usa mod 
     NEXT_STATE.REGS[rd] = result;
 }
 
@@ -539,10 +541,10 @@ void decode()
     // LSL y LSR (immediate)
     if (opcode == 0b1101001101) {
         if (DEBUG == 1) {printf("LSL \n opcode: %d\n", opcode);}
-        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
         rd = curr_instr & 0x0000001f;   // mask bits 0-4
         rn = curr_instr & 0x000003e0;   // mask bits 5-9
         rn = rn >> 5;
+        imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
         imm = imm >> 10;
         immr = 0x003f0000;              // mask bits 16-21
         immr = immr >> 16;
