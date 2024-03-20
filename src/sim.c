@@ -38,8 +38,10 @@ typedef enum {
 uint32_t curr_instr;  // current instruction
 void fetch() {
     curr_instr = mem_read_32(CURRENT_STATE.PC);
+    if (DEBUG == 1) {
     printf("fetch\n");
     printf("comentario\n");
+    }
 }
 
 // INSTRUCCIONES A IMPLEMENTAR:
@@ -80,8 +82,9 @@ uint32_t rn;
 uint32_t rm;
 uint32_t imm;
 uint32_t shift;
-int64_t result;                     // RECIEN CAMBIE RESULT, AUX1 y AUX2 A INT64_T (ERAN UINT64) PARA QUE NO SE ROMPA CUANDO HAGO LA RESTA, CHEQUEAR QUE NO HAYA ROTO OTRAS COSAS !?!?!!!!????
 uint32_t immr;
+
+int64_t result;                     // RECIEN CAMBIE RESULT, AUX1 y AUX2 A INT64_T (ERAN UINT64) PARA QUE NO SE ROMPA CUANDO HAGO LA RESTA, CHEQUEAR QUE NO HAYA ROTO OTRAS COSAS !?!?!!!!????
 int64_t aux1;
 int64_t aux2;
 int64_t imm26;
@@ -771,7 +774,7 @@ void decode()
         aux1 = curr_instr & 0x0000000f;   // mask bits 0-3
         imm26 = curr_instr & 0x00ffffe0;  // mask bits 5-23 (imm19 pero uso la variable global definida)
         imm26 = imm26 >> 5;
-        if (imm26 >> 23 == 0b1) {         // si es negativo   
+        if (imm26 >> 18 == 0b1) {         // si es negativo   
             imm26 = imm26 | 0xfffffffffff80000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
         }
         imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
@@ -814,33 +817,6 @@ void decode()
         instr_name = B;
     }
 
-
-
-    // // case CB:  
-    // opcode = curr_instr >> 24;
-
-    // // B.COND (pag 549)    
-    // if (opcode == 0b01010100) {
-    //     // execute_B_COND();
-    // } // chequear sub casos (BEQ, BNE, BGT, BLT, BGE, BLE) mirar desp del opcode
-
-    // // case I:
-    // opcode = curr_instr >> 22;
-
-    // // CMP
-    // if (opcode == 0b1101000100) {
-    //     // execute_CMP();
-    // }
-
-
-    // LSL
-
-    // LSR
-
-    // case I:
-    // case D:
-    // case R:
-    // case IW:
 }
 
 
