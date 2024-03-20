@@ -715,6 +715,7 @@ void decode()
     if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
         if (DEBUG == 1) {printf("SUBS IMMEDIATE \n opcode: %d\n", opcode);}
         rd = curr_instr & 0x0000000f;  // mask bits 0-4
+        if (rd = 0b11111 && DEBUG == 1) {printf("caso CMPI\n");} 
         rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
         rn = rn >> 5; 
         imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
@@ -729,22 +730,22 @@ void decode()
         instr_name = SUBSI;
     }
 
-    // CMP IMMEDIATE
-    if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
-        if (DEBUG == 1) {printf("CMP IMMEDIATE \n opcode: %d\n", opcode);}
-        rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
-        rn = rn >> 5; 
-        imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
-        uint32_t shift = opcode & 0b0000000001;
-        if (shift == 0b0000000000) {
-            if (DEBUG == 1) {printf("No shift\n");}
-            imm = imm >> 10;
-        } else if (shift == 0b0000000001) {
-            if (DEBUG == 1) {printf("Shift\n");}
-            imm = imm << 2;
-        } 
-        instr_name = CMPI;
-    }
+    // // CMP IMMEDIATE
+    // if (opcode == 0b1111000100 || opcode == 0b1111000101) { 
+    //     if (DEBUG == 1) {printf("CMP IMMEDIATE \n opcode: %d\n", opcode);}
+    //     rn = curr_instr & 0x000001f0;  // mask bits 5-9 bits
+    //     rn = rn >> 5; 
+    //     imm = curr_instr & 0x003ffc00; // mask bits 10-21 bits (12)
+    //     uint32_t shift = opcode & 0b0000000001;
+    //     if (shift == 0b0000000000) {
+    //         if (DEBUG == 1) {printf("No shift\n");}
+    //         imm = imm >> 10;
+    //     } else if (shift == 0b0000000001) {
+    //         if (DEBUG == 1) {printf("Shift\n");}
+    //         imm = imm << 2;
+    //     } 
+    //     instr_name = CMPI;
+    // }
 
     // LSL y LSR (immediate)
     if (opcode == 0b1101001101) {
