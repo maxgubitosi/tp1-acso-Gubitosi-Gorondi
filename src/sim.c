@@ -24,11 +24,16 @@ typedef enum {
     LDUR,
     LDURH,
     LDURB,
-    MOVZ
+    MOVZ,
+    B,
+    BR,
+    BEQ,
+    BNE,
+    BGT,
+    BLT,
+    BGE,
+    BLE
 } instr_t;
-
-// probar enummerate
-
 
 uint32_t curr_instr;  // current instruction
 void fetch() {
@@ -55,15 +60,15 @@ void fetch() {
         - BLT
         - BGE
         - BLE
-    11. LSL
-    12. LSR
-    13. STUR
-    14. STURB
-    15. STURH
-    16. LDUR
-    17. LDURH
-    18. LDURB
-    19. MOVZ
+    11. LSL --
+    12. LSR --
+    13. STUR --
+    14. STURB --
+    15. STURH --
+    16. LDUR --
+    17. LDURH --
+    18. LDURB --
+    19. MOVZ --
 */
 
 
@@ -79,6 +84,7 @@ uint64_t result;
 uint32_t immr;
 uint64_t aux1;
 uint64_t aux2;
+int64_t imm26;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -331,6 +337,59 @@ void execute_LDURB() {
     NEXT_STATE.REGS[rt] = aux1 & 0x000000ff;
 }
 
+void execute_B() {
+    if (DEBUG == 1) {printf("execute_B\n");}
+    NEXT_STATE.PC += imm26;
+}
+
+void execute_BR() {
+    if (DEBUG == 1) {printf("execute_BR\n");}
+    NEXT_STATE.PC = CURRENT_STATE.REGS[rn];
+}
+
+void execute_BEQ() {
+    if (DEBUG == 1) {printf("execute_BEQ\n");}
+    if (CURRENT_STATE.FLAG_Z == 1) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+void execute_BNE() {
+    if (DEBUG == 1) {printf("execute_BNE\n");}
+    if (CURRENT_STATE.FLAG_Z == 0) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+void execute_BGT() {
+    if (DEBUG == 1) {printf("execute_BGT\n");}
+    if (CURRENT_STATE.FLAG_Z == 0 && CURRENT_STATE.FLAG_N == 0) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+void execute_BLT() {
+    if (DEBUG == 1) {printf("execute_BLT\n");}
+    if (CURRENT_STATE.FLAG_N != 0) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+void execute_BGE() {
+    if (DEBUG == 1) {printf("execute_BGE\n");}
+    if (CURRENT_STATE.FLAG_N == 0) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+void execute_BLE() {
+    if (DEBUG == 1) {printf("execute_BLE\n");}
+    if (!(CURRENT_STATE.FLAG_Z == 0 && CURRENT_STATE.FLAG_N == 0)) {
+        NEXT_STATE.PC += imm26;
+    }
+}
+
+
 
 // GENERAL EXECUTE FUNCTIONS
 void set_flags() {
@@ -347,8 +406,6 @@ void set_flags() {
         NEXT_STATE.FLAG_Z = 0;
     }
 }
-
-
 
 void execute() {
     if (DEBUG == 1) {printf("execute_funcion\n");}
@@ -411,8 +468,32 @@ void execute() {
         case MOVZ:
             execute_MOVZ();
             break;
-        
+        case B:
+            execute_B();
+            break;
+        case BR:
+            execute_BR();
+            break;
+        case BEQ:
+            execute_BEQ();
+            break;
+        case BNE:
+            execute_BNE();
+            break;
+        case BGT:
+            execute_BGT();
+            break;
+        case BLT:
+            execute_BLT();
+            break;
+        case BGE:
+            execute_BGE();
+            break;
+        case BLE:
+            execute_BLE();
+            break;    
         default:
+            if (DEBUG == 1) {printf("Error en execute: case not found\n");}
             break;
     }
     if (FLAGS) {set_flags();}
@@ -600,6 +681,13 @@ void decode()
         instr_name = LDURH;
     }
 
+    // BR
+    if (opcode == 0b11010110000) {
+        if (DEBUG == 1) {printf("BR \n opcode: %d\n", opcode);}
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        instr_name = BR;
+    }
 
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
@@ -674,6 +762,58 @@ void decode()
         }
         else {instr_name = LSL;}
     }
+
+    opcode = opcode >> 2;                             // opcode size: 8 bits
+    // B.COND
+    if (opcode == 0b01010100) {
+        if (DEBUG == 1) {printf("B.COND \n opcode: %d\n", opcode);}
+        aux1 = curr_instr & 0x0000000f;   // mask bits 0-3
+        imm26 = curr_instr & 0x00ffffe0;  // mask bits 5-23 (imm19 pero uso la variable global definida)
+        imm26 = imm26 >> 5;
+        if (imm26 >> 23 == 0b1) {         // si es negativo   
+            imm26 = imm26 | 0xfffffffffff80000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
+        }
+        imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
+
+        // sub casos del aux1
+        switch (aux1) {
+        case 000: // BEQ
+            instr_name = BEQ;
+            break;
+        case 001: // BNE
+            instr_name = BNE;
+            break;
+        case 100: // BGT
+            instr_name = BGT;
+            break;
+        case 011: // BLT
+            instr_name = BLT;
+            break;
+        case 010: // BGE
+            instr_name = BGE;
+            break;
+        case 101: // BLE
+            instr_name = BLE;
+            break;
+        default:
+            printf("Error en B.COND: case not found\n");
+            break;
+        }
+    }
+
+    opcode = opcode >> 2;                             // opcode size: 6 bits
+    // B
+    if (opcode == 0b000101) {
+        if (DEBUG == 1) {printf("B \n opcode: %d\n", opcode);}
+        imm26 = curr_instr & 0x03ffffff;  // mask bits 0-25
+        if (imm26 >> 25 == 0b1) {         // si es negativo   
+            imm26 = imm26 | 0xfffffffffc000000;  // sign extend: hace que siga siendo el mismo numero pero con 64 bits
+        }
+        imm26 = imm26 << 2;  // shift left 2 bits (lo mismo que multiplicar por 4)
+        instr_name = B;
+    }
+
+
 
     // // case CB:  
     // opcode = curr_instr >> 24;
