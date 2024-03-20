@@ -251,6 +251,9 @@ void execute_ORR() {
 
 void execute_LSL() {                                    // QUE HAGO CON EL immr? HAY QUE ROTAR? !!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if (DEBUG == 1) {printf("execute_LSL\n");}
+    printf("immr: %x\n", immr);
+    printf("imms: %x\n", imm);
+    printf("curr: %x\n", curr_instr);
     uint64_t op1 = CURRENT_STATE.REGS[rn];
     // uint64_t aux = op1;
     result = op1 << (immr % 64);            // usa mod 
