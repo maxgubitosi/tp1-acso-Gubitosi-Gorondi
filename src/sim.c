@@ -557,7 +557,7 @@ void decode()
         rn = rn >> 5;
         imm = curr_instr & 0x0000fc00;  // mask bits 10-15 (imm6)
         imm = imm >> 10;
-        immr = 0x003f0000;              // mask bits 16-21
+        immr = curr_instr & 0x003f0000;              // mask bits 16-21
         immr = immr >> 16;
         if (imm == 0b111111) {
             if (DEBUG == 1) {printf("LSL con imm == 0b111111\n Entonces es LSR!!\n");}
