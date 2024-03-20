@@ -76,6 +76,9 @@ void fetch() {
 
 
 instr_t instr_name=0;
+uint8_t FLAGS;
+uint8_t INCREASE_PC;
+
 uint32_t rd;
 uint32_t rt;
 uint32_t rn;
@@ -343,17 +346,20 @@ void execute_LDURB() {
 void execute_B() {
     if (DEBUG == 1) {printf("execute_B\n");}
     NEXT_STATE.PC += imm26;
+    INCREASE_PC = 0;
 }
 
 void execute_BR() {
     if (DEBUG == 1) {printf("execute_BR\n");}
     NEXT_STATE.PC = CURRENT_STATE.REGS[rn];
+    INCREASE_PC = 0;
 }
 
 void execute_BEQ() {
     if (DEBUG == 1) {printf("execute_BEQ\n");}
     if (CURRENT_STATE.FLAG_Z == 1) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -361,6 +367,7 @@ void execute_BNE() {
     if (DEBUG == 1) {printf("execute_BNE\n");}
     if (CURRENT_STATE.FLAG_Z == 0) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -368,6 +375,7 @@ void execute_BGT() {
     if (DEBUG == 1) {printf("execute_BGT\n");}
     if (CURRENT_STATE.FLAG_Z == 0 && CURRENT_STATE.FLAG_N == 0) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -375,6 +383,7 @@ void execute_BLT() {
     if (DEBUG == 1) {printf("execute_BLT\n");}
     if (CURRENT_STATE.FLAG_N != 0) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -382,6 +391,7 @@ void execute_BGE() {
     if (DEBUG == 1) {printf("execute_BGE\n");}
     if (CURRENT_STATE.FLAG_N == 0) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -389,6 +399,7 @@ void execute_BLE() {
     if (DEBUG == 1) {printf("execute_BLE\n");}
     if (!(CURRENT_STATE.FLAG_Z == 0 && CURRENT_STATE.FLAG_N == 0)) {
         NEXT_STATE.PC += imm26;
+        INCREASE_PC = 0;
     }
 }
 
@@ -410,9 +421,11 @@ void set_flags() {
     }
 }
 
+
 void execute() {
     if (DEBUG == 1) {printf("execute_funcion\n");}
-    uint8_t FLAGS = 0;
+    FLAGS = 0;
+    INCREASE_PC = 1;
     switch (instr_name) {
         case ADDS:
             execute_ADDS_ext(); FLAGS = 1; 
@@ -500,7 +513,7 @@ void execute() {
             break;
     }
     if (FLAGS) {set_flags();}
-    NEXT_STATE.PC += 4;
+    if (INCREASE_PC) {NEXT_STATE.PC += 4;}
 }
 
 
