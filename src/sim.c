@@ -69,12 +69,15 @@ void fetch() {
 
 int instr_name=0;
 uint32_t rd;
+uint32_t rt;
 uint32_t rn;
 uint32_t rm;
 uint32_t imm;
 uint32_t shift;
 uint64_t result;
 uint32_t immr;
+uint64_t aux1;
+uint64_t aux2;
 
 /* IDEA: hacer un struct con los instructions:
     typedef struct instruction {
@@ -276,6 +279,14 @@ void execute_MOVZ() {
     NEXT_STATE.REGS[rd] = imm;
 }
 
+void execute_STUR() {
+    if (DEBUG == 1) {printf("execute_STUR\n");}
+    uint64_t base_address = CURRENT_STATE.REGS[rn] + imm;
+    aux1 = CURRENT_STATE.REGS[rt];
+    aux2 = CURRENT_STATE.REGS[rt] >> 32;
+    mem_write_32(base_address, aux1);
+    mem_write_32(base_address + 4, aux2);
+}
 
 
 // GENERAL EXECUTE FUNCTIONS
@@ -337,7 +348,7 @@ void execute() {
             execute_LSR();
             break;
         case STUR:
-            // execute_STUR();
+            execute_STUR();
             break;
         case STURB:
             // execute_STURB();
@@ -481,16 +492,15 @@ void decode()
     }
 
     // STUR
-    // if (opcode == 0b11111000000) {
-    //     if (DEBUG == 1) {printf("STUR \n opcode: %d\n", opcode);}
-    //     // STUR
-    //     rd = curr_instr & 0x0000001f;   // mask bits 0-4
-    //     rn = curr_instr & 0x000003e0;   // mask bits 5-9
-    //     rn = rn >> 5;
-    //     imm = curr_instr & 0x003ffc00;  // mask bits 10-21
-    //     imm = imm >> 10;
-    //     instr_name = STUR;
-    // }
+    if (opcode == 0b11111000000) {
+        if (DEBUG == 1) {printf("STUR \n opcode: %d\n", opcode);}
+        rt = curr_instr & 0x0000001f;   // mask bits 0-4
+        rn = curr_instr & 0x000003e0;   // mask bits 5-9
+        rn = rn >> 5;
+        imm = curr_instr & 0x001ff000;  // mask bits 12-20
+        imm = imm >> 12;
+        instr_name = STUR;
+    }
 
     opcode = opcode >> 1; // shiftea total 22       // opcode size: 10 bits
     // ADDS IMMEDIATE
